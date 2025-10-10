@@ -1,0 +1,1378 @@
+id,title,author,created_at,closed_at,labels,body
+2797603841,Adds installationTime and repairTime to equipment info object,phkb,2025-09-04 00:33:46+00:00,2025-09-04 11:33:38+00:00,{},Also updates to CHANGELOG.TXT.
+2780487799,Adding new world event guiSelectedRowChanged,phkb,2025-08-28 05:30:17+00:00,2025-09-01 21:38:41+00:00,{},"This PR adds a new world event, ""guiSelectedRowChanged"", which is raised any time the player selects a new item on a gui screen. This could happen by using the up and down arrow keys, or by using the mouse.
+
+The goal of this event is to give scripters the ability to see what the player is doing on a screen and respond to it _before_ the player presses the enter key. For instance, looking towards accessibility development, the text of the selected item could be read out to the player audibly as soon as they select it. 
+
+The format of the event is:
+
+`this.guiSelectedRowChanged = function(key, row, text) {
+}`
+
+Where
+   key (string) = the underlying key code for the selected row, based on the screen currently shown.
+   row (int) = the gui screen row index value for the selected row
+   text (string) = the text of the selected row
+
+The event will fire on all screens that have any sort of gui element, including the options screen (F2), the game options screen, and any mission screen. Screens where the event doesn't fire are the various chart screens (F6 and F6F6), the system info screen (F7), the manifest screen (F5F5), but only if there is a single page, and the market info screen (F8F8)."
+2779809448,Fixes Linux format-security issues,phkb,2025-08-27 22:50:34+00:00,2025-08-28 12:11:56+00:00,{},Courtesy of LW-archlinux
+2760660523,HDR selectable tone mapper & migration of some global properties to the oolite JS object,AnotherCommander,2025-08-20 18:05:16+00:00,2025-08-21 18:16:59+00:00,{},"This is a dual purpose PR. Its second part came to existence as a result of changes to the first part. Here is what we are trying to achieve:
+
+# 1. HDR selectable tone mapper
+__Note: This is a Windows-only feature at this time.__
+
+We can now select from three available HDR tone mappers for the final scene presentation, four if you include the no-tone-mapper option which is there mainly for testing purposes. The selection is made by script for now, using specific string identifiers for each one and this syntax:
+
+`oolite,hdrToneMapper = [""OOHDR_TONEMAPPER_ACES_APPROX"" | ""OOHDR_TONEMAPPER_DICE "" | ""OOHDR_TONEMAPPER_REINHARD"" | ""OOHDR_TONEMAPPER_NONE""]`
+
+At any time you can query the active tone mapper with
+
+`oolite.hdrToneMapper`
+
+If you try to pass any invalid string, ""OO_HDR_TONEMAPPER_ACES_APPROX"" will be automatically selected.
+
+The default is OO_HDR_TONEMAPPER_ACES_APPROX, which is what we currently have and refers to the ACES approximation by [Krzysztof Narkowicz](https://knarkowicz.wordpress.com/2016/08/31/hdr-display-first-steps/). A very good tone map overall, very fitting with sci-fi themes with good handling of dark tones.
+
+OO_HDR_TONEMAPPER_DICE is an implementation of DICE's by-luminance tone mapper. It is very vivid and bright and maintains color hues. The implementation we have in this PR is a direct translation to glsl  of the [RenoDX](https://github.com/clshortfuse/renodx) hlsl code by Carlos Lopez Jr, licensed under the MIT license.
+
+OO_HDR_TONEMAPPER_REINHARD is the standard old Reinhard tone mapper adapted for HDR. It is very simple and, as a result, very fast, but not as visually impressive as the other two.
+
+OO_HDR_TONEMAPPER_NONE will display the actual HDR output from the game without any attempt to map to your display's capabilities. Currently there is a 1000 nits cap on this. If you use this, you will notice hard clipping of highlights in a lot of occasions. It is mainly here for testing purposes.
+
+Additionally, you can define the desired HDR tone mapper inside .GNUstepDefaults if you prefer like this for example:
+`""hdr-tone-mapper"" = OOHDR_TONEMAPPER_DICE;`
+Note that the quotes are not required here. Again, any invalid string will automatically fall back to OOHDR_TONEMAPPER_ACES_APPROX.
+
+If you are running in SDR or under Linux, `oolite.hdrToneMapper` will return `""OOHDR_TONEMAPPER_UNDEFINED""` and any attempt to set it will have no effect.
+
+
+# 2. Migration of some global properties to the oolite JS object
+This was due in for a long time now and getting the tone mapper stuff to work inevitably led to this, since there was no way I was going to add two more global getter / setter methods for something that clearly belongs to the oolite JS object.
+
+So the following objects and methods have been moved over to the oolite JS object as read/write properties and are referred to thus:
+__postFX  -->  oolite.postFX__
+__getColorSaturation()/setColorSaturation()  -->  oolite.colorSaturation__
+__timeAccelerationFactor  -->  oolite.timeAccelerationFactor__<sup>1</sup>
+__oolite.hdrToneMapper__ (new property)
+
+As always, appending an `'= [value]'` after any of the above will act as a setter, while simply calling the property as seen above acts as a getter.
+
+I think the new structure makes much more sense and avoids cluttering the global JS namespace.
+____________________________
+<sup>1</sup>Since `timeAccelerationFactor` was present in Oolite v1.90, it is the only property that has not been removed from the global object. You can still access it but the global object version is scheduled for deprecation."
+2729093972,Clean up flags,mcarans,2025-08-07 22:03:34+00:00,2025-08-22 06:08:48+00:00,{},"Fix typo DOO_FOV_INFLIGHT_CONTROL_ENABLEDD
+
+Remove FEATURE_REQUEST_5496 as no references in code
+
+Replace OO_EXCLUDE_DEBUG_SUPPORT with NDEBUG in code for consistency - previously if you set NDEBUG (eg. BUILD_WITH_DEBUG_FUNCTIONALITY no)  but not OO_EXCLUDE_DEBUG_SUPPORT, then compile failed. 
+
+Remove BUILD_WITH_DEBUG_FUNCTIONALITY as duplicates OO_EXCLUDE_DEBUG_SUPPORT (which equals NDEBUG). The simplification means that OO_EXCLUDE_DEBUG_SUPPORT effectively becomes a more human readable version of NDEBUG for use in config.make and using NDEBUG alone does not break builds.
+
+Tested on Windows and Linux including building, installing and running package
+"
+2693816458,Hdr detection fix on multi-monitor setups,AnotherCommander,2025-07-25 04:16:29+00:00,2025-07-25 04:18:53+00:00,{},Fixed HDR detection in the case of multi-monitor setups where the device enumeration order between DislayConfig API and EnumDisplayDevices was not guaranteed to be the same.
+2690859531,"Add Clang flag, assume x86_64 for Windows/Linux",mcarans,2025-07-24 05:58:21+00:00,2025-08-02 15:22:52+00:00,{},"Also split GNUmakefile to make it easier to follow
+"
+2644036340,Added workaround for weird compiler behaviour ,tsoj,2025-07-06 00:09:46+00:00,2025-07-06 12:05:16+00:00,{},"I believe the issue is with gcc 15, possibly a compiler bug, but I didn't investigate further after finding the workaround of adding parentheses. The error looked like this + same thing with the `if (_count * 2 <= _capacity)` line:
+```cpp
+src/Core/HeadUpDisplay.m: In function ‘-[HeadUpDisplay renderHUD]’:
+src/Core/HeadUpDisplay.m:841:13: error: unknown type name ‘_crosshairWidth’
+  841 |         if (_crosshairWidth * lineWidth > 0)
+      |             ^~~~~~~~~~~~~~~
+src/Core/HeadUpDisplay.m:841:41: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘>’ token
+  841 |         if (_crosshairWidth * lineWidth > 0)
+      |                                         ^
+src/Core/HeadUpDisplay.m:841:13: error: declaration in the controlling expression must have an initializer
+  841 |         if (_crosshairWidth * lineWidth > 0)
+      |             ^~~~~~~~~~~~~~~
+src/Core/HeadUpDisplay.m:845:10: error: expected ‘)’ before ‘if’
+  845 |         }
+      |          ^
+      |          )
+  846 |
+  847 |         if (lineWidth > 0)
+      |         ~~
+src/Core/HeadUpDisplay.m:841:12: note: to match this ‘(’
+  841 |         if (_crosshairWidth * lineWidth > 0)
+      |            ^
+src/Core/HeadUpDisplay.m:860:1: error: expected expression before ‘}’ token
+  860 | }
+      | ^
+``` 
+
+
+
+Also added more compiling troubleshooting info + tiny README cleanup.
+Also, as a heads-up: The pre-compiled nightly Linux binaries don't work on Fedora 42 anymore, since the binaries need libgnustep-base.so.1.28 but Fedora 42 has version 1.30."
+2607104527,Pause in mission screens,AnotherCommander,2025-06-20 11:03:35+00:00,2025-06-23 16:15:08+00:00,{},"For a very long time, pausing in mission screens was not feasible. I do not have a recollection of why that was the case, but I imagine that at some point during the early Oolite days, mission screens probably had to adhere to design specs and patterns that may not be applicable at this time.
+
+This PR changes things so that now pause and unpause in mission screens is allowed while docked. In the current game version we have plenty of mission screens. We don't have only the Constrictor, Nova etc. screens, but also the cargo, parcel and passenger contract ones, including both the contract lists and the map screens of each contract. Up to now attempting to pause while viewing the passenger contracts, for example, was not an option but for the end user this created a feeling of inconsistency, with some screens allowing pause and others not. The PR normalizes things somewhat.
+
+Text entry mission screens are supported. Pausing during text entry is not possible and if, for some reason, we manage to enter a mission screen with text input while paused (as one can do using the debug console) it is possible to simply unpause and then continue with text entry.
+
+In-flight is not covered by this PR. Maybe at a later stage, but I think in-flight mission screens are rare anyway.
+
+Please advise if you believe that merging this PR could result in breakage and try to see if you can break it by testing various mission screens. Will leave it up for a few days to give time to test."
+2548580247,"Updates binaries, adds extra info to shipdata",phkb,2025-05-28 07:05:04+00:00,2025-05-28 07:45:51+00:00,{},
+2547693059,Add flatpak ci,sharpenedblade,2025-05-27 21:26:55+00:00,2025-07-23 07:17:38+00:00,{},"This depends on #515 being merged. I don't know how to make github handle it properly so I just rebased this pr on top of that pr, which is why it duplicates commits from that pr."
+2542743740,Add freedesktop metainfo file,sharpenedblade,2025-05-26 00:31:37+00:00,2025-07-23 07:19:10+00:00,{},"I was asked to upstream this file when I submitted the flatpak to flathub. I copied the description, screenshots, and summary from the website."
+2541131269,Adds missing viewDirectionChanged event for VIEW_GUI_SCREEN,phkb,2025-05-24 00:31:33+00:00,2025-05-28 06:22:35+00:00,{},Also removes a duplicate include statement from playerEntityControls.m
+2520542945,add version numbers to generated PDFs,oocube,2025-05-14 23:45:07+00:00,2025-05-14 23:48:30+00:00,{},
+2502700633,Use generated PDFs in releases,oocube,2025-05-06 21:24:04+00:00,2025-05-06 21:24:33+00:00,{},"Fixed a chain of events:
+- unzip was configured to only overwrite older or nonexisting files
+- we decided to keep the old PDFs
+- during checkout git would assign new timestamps
+
+Thus the timestamp of the outdated files was later than the generated files and the files would not get overwritten.
+"
+2502692925,use the generated pdfs for further builds,oocube,2025-05-06 21:19:25+00:00,2025-05-06 21:20:11+00:00,{},"Fixed a chain of events:
+- unzip was configured to only overwrite older or nonexisting files
+- we decided to keep the old PDFs
+- during checkout git would assign new timestamps
+
+Thus the timestamp of the outdated files was later than the generated files and the files would not get overwritten."
+2484546956,Added protection for when addGroup fails to add any ships,phkb,2025-04-28 01:35:29+00:00,2025-04-29 22:03:19+00:00,{},"When there are a number of OXP's adding ships with, for example, the ""interceptor"" role, but those ships are restricted by a condition script, the possibility of the system.addGroup function not being able to create the group is much higher.
+This tweak just adds some protection to the JS code, rather than generating an error message."
+2469526357,Documentation coverage report,oocube,2025-04-19 10:21:02+00:00,2025-04-19 18:54:26+00:00,{},"This allows not only to browse doxygen documentation for Oolite, but also see reports how much has been documented and where improvements may be useful. Hopefully someone with knowledge on the code would add information that others then may use to better understand the code.
+
+The coverage report is available in the doxygen documentation both from the main page as well as in the topics menu."
+2469473863,Added missing normal and specular map entries for rock-hermits,phkb,2025-04-19 08:08:45+00:00,2025-04-19 11:03:47+00:00,{},
+2438599828,Fixes issue where extraGuiScreenKeys was not being reset at the right…,phkb,2025-04-04 05:32:58+00:00,2025-04-04 05:53:46+00:00,{},… time
+2435517926,Fixes index out of range issue,phkb,2025-04-03 00:29:30+00:00,2025-04-03 00:40:09+00:00,{},
+2220577465,Build instructions openSUSE,sboehringer,2024-12-06 17:44:17+00:00,2025-04-19 18:52:57+00:00,{},Tested as of 20241206 under Tumbleweed version 20241111
+2196824375,New ECM Visual Effect,AnotherCommander,2024-11-24 15:12:55+00:00,2024-11-28 13:22:15+00:00,{},"This PR implements a visual addition to the ECM effect. Till now ECM blast presence is indicated by a jitter of the scanner lollipops. With the changes from this PR we now also get an EM interference pattern on the ship's view screen, expressed as a burst of static and/or CRT malfunction. The effect is available only when shaders are available, so you will be able to experience it in the Shaders Enabled and Extra Detail detail levels. You will get it at every ECM trigger event, be it from NPCs or the player.
+
+The original shader used as inspiration for this is https://www.shadertoy.com/view/ltV3z1 . Note that it seems to rely on some strange code operations like mod(x, 0.0). However, it seems to perform exactly as advertised so I did not make any substantial changes to it.
+
+Linux maintainers, please confirm that it works also for you if you can. I tried to make sure that this effect will be available and functional on Linux too, but need to be sure.
+
+This video shows what the new effect looks like.
+
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/fQq0Fun1Ty8/0.jpg)](http://www.youtube.com/watch?v=fQq0Fun1Ty8 ""Oolite 1.91 - New ECM Effect"")"
+2086225993,OXZ Manager: Leading whitespaces from string filters are now stripped.,AnotherCommander,2024-09-23 10:40:48+00:00,2024-09-23 11:35:34+00:00,{},"This should fix issue #376 and reduce potential confusion.
+
+Part of this PR are also four new NSString extensions: -stringByTrimmingLeadingCharactersInSet, -stringByTrimmingLeadingWhitespaceAndNewlineCharacters, -stringByTrimmingTrailingCharactersInSet and -stringByTrimmingTrailingWhitespaceAndNewlineCharacters: The last two are not used in this fix, but they are handy and can be useful in the future if need be.
+
+While at it I also applied the same behavior on the remaining string filters, namely author, tag and category."
+2078978110,"Fix mac build of v1.90, works on macos 10.14.6 using XCode 11.3.1",keaaw,2024-09-18 15:10:27+00:00,2024-09-18 17:21:30+00:00,{},"* libpng and the Sparkle framework are now in the repo in deps/Cocoa-deps
+
+  (no more downloading from external sites during the build)
+
+* libpng contents pruned to just source files needed by Oolite plus various readme's.
+
+* change from (gnu) libstdc++ to (clang) libc++ in order to build on a (more) modern x86 Mac bumped macos deployment version from 10.6 to 10.7 (required by switch to libc++)
+
+* Oolite 1.90 now builds (all build targets, and unit tests all pass) on macos 10.14.6 mojave
+  using XCode 11.3.1.   Run tested nominally on same mojave build system
+
+* Removed libpng and sparkle from .gitignore"
+2045552226,EXR snapshots support,AnotherCommander,2024-08-30 05:40:20+00:00,2024-08-31 15:28:50+00:00,{},"This PR implements support for saving HDR snapshots in Industrial Light and Magic's OpenEXR format. This is much better than the Radiance RGBE (.hdr) format we currently use; it supports expanded gamut colors and has improved color accuracy, for starters. It is also more widespread in the graphics industry, meaning that there are more apps available that can open it out of the box. Although slower to encode than Radiance, in practice I did not see a measurable difference when saving an HDR screenshot. The only drawbacks compared to Radiance that I can see are size, as EXRs are massive (11.8MB for a 1920x1080 screen vs 4.5MB with Radiance) and dynamic range, where RGBE is superior, although in practice we don't ever get to use all that range, so it's a moot point. But at the very least, we now have the option to choose our format.
+
+The snapshot file format to use in HDR mode is now a user preference. Default is switched to EXR, but you can set the .GNUstepDefaults key ""hdr-snapshot-format"" to make it save Radiance .hdr snapshots like this:
+```
+""hdr-snapshot-format"" = .hdr;
+```
+The leading dot is optional, Oolite will understand the extension with or without it. If the key is missing we default to .exr. If the user tries to enter any random string other than the allowed ""[.]hdr"" and ""[.]exr"", a warning will be posted in the log and .exr will be selected by default anyway.
+
+The implementation uses the tinyexr (written in C++) and miniz libraries and has been designed to accommodate Linux in the future., as well as the possibility to host additional HDR image formats if needed. "
+2027120264,OXZ Manager - Filter by Category,AnotherCommander,2024-08-20 08:38:07+00:00,2024-08-21 07:57:35+00:00,{},"I don't know how we managed to miss the most obvious filter in the OXZ Manager for so long, but this PR aims to remedy the situation. It implements the 'c:<category>' filter, which, when applied, will list only managed expansions belonging to the specified category. So you can write something like c:ships in the filters screen and it will show you only the expansions in the Ships category. You won't have to press More one thousand times to get to Ships anymore."
+1882255534,Introducing -help / --help Command Line Option,AnotherCommander,2024-05-22 11:36:33+00:00,2024-05-24 18:28:54+00:00,{},"This PR aims to assist new players trying to work their way through the game at its early stages. It enables the -help (--help also works) command line option. Entering [-]-help as a command line parameter opens up a message box with the list of available command line options on Windows, while on Linux it sends all output to stdout. The game will exit if the [-]-help parameter is detected in the command line args, immediately after the help info has been displayed. The exit code in this case is 2, which means exiting due to [-]-help found.
+
+A short message indicating the exit reason is sent to the actual log as well. This is to avoid sudden termination of the log file, which could lead to the potential (wrong) assumption that a crash occurred."
+1788581404,Fixes issue where setting keys for custom equipment was failing,phkb,2024-03-25 03:36:55+00:00,2024-03-26 00:36:29+00:00,{},"The fail was causing an error to be written to the log, but the app continued to run. See issue #479 
+The issue was only occurring in the Linux build, but I have tested this on both Windows and Linux."
+1788572478,Fixes issue where current keyboard layout was not showing in list,phkb,2024-03-25 03:25:37+00:00,2024-03-25 03:27:29+00:00,{},"This was a display issue only - the keyboard layout was correctly saved, it just wasn't reflected on the page."
+1771338901,Fixes issue with too many choices to fit on mission screen,phkb,2024-03-14 04:15:36+00:00,2024-03-21 22:33:59+00:00,{},"This PR fixes the issue where too many choices have been defined in the options dictionary to fit on the current mission screen.
+
+Essentially, what I'm doing here is (apart from putting a notice in the log) ignoring choices that fall outside the scope of the screen. This could potentially leave the screen in a weird state, if (say) the option to close the screen is one of the excluded options.
+
+As an alternative, I could ignore *all* options if too many have been defined. Let me know your preference."
+1743554932,Added ability to set default activate+mode keys for equipment items,phkb,2024-02-26 14:34:23+00:00,2024-03-12 22:15:16+00:00,{},"With this PR, you can now set ""default_activate_key"" and ""default_mode_key"" in your equipment.plist definition. If the chosen key conflicts with another key when loading, the setting will be ignored.
+The definition is the same as for other key settings, in that it is an array of dictionary items. For example:
+```
+	default_activate_key = ({key = ""0""; shift = true;});
+	default_mode_key = ({key = ""9""; mod1 = true;});
+
+```
+If you change the default key for the equipment item, the ""Overrides"" column will now show that the key setting has changed from the default.
+"
+1656096415,Eslint can check javascript but does not break the build,HiranChaudhuri,2023-12-24 11:51:13+00:00,2023-12-24 11:51:46+00:00,{},
+1647767320,"Adds extra docking tip, reminding players to keep moving forward",phkb,2023-12-18 04:50:13+00:00,2023-12-19 22:22:07+00:00,{},"We've had a couple of players get inside the dock and then stop, rotating in place and waiting. This tip encourages them to keep moving forward, towards the rear of the docking bay."
+1647182239,Adds consoleMessageReceived event,phkb,2023-12-17 04:35:34+00:00,2023-12-18 01:49:34+00:00,{},And updates some changelog entries.
+1639962660,Adds purchase_sort_order to equipment.plist to sort F3 screen indepen…,phkb,2023-12-12 04:03:06+00:00,2023-12-17 04:01:52+00:00,{},"…dently of F5 screen
+This is following a suggestion from @cim--  in #469 to keep the sorting on the F5 page in reverse order, and splitting the F3 sort to have it's own.
+If ""purchase_sort_order"" is not supplied, ""sort_order"" will be used. In neither is supplied, 1000 will be used.
+"
+1637877033,Added player ship property to allow status screen equipment to have a…,phkb,2023-12-11 00:36:15+00:00,2023-12-17 04:02:15+00:00,{},"…scending sort
+The default sort method works to put the most important equipment on the first page of the F5 Status screen. The assumption is, if it's got a high TL and price, it must be more important. The sort_order property of equipment is considered before these two. However, because the list is in reverse order, any ordering that has been encoded into the ""sort_order"" property will also be reversed.
+To work around this, a new r/w property has been added to the player.ship: ""statusScreenEquipmentSort"". The default value for this is 0, which is the reverse order method, as it currently works. By changing this value to 1, the list goes back to an ascending order, which gives OXP's that make heavy use of the ""sort_order"" property the opportunity to decide what order should be used on the status screen."
+1635858391,Hides the price and install time values on the F3 Ship Outfitting screen,phkb,2023-12-08 09:25:46+00:00,2023-12-08 09:55:03+00:00,{},"This makes it possible to have more display options on the F3 screen (allowing header entries, or top-level entries)."
+1627296564,Allows for consistent naming of fields in the equipment-overrides.pli…,phkb,2023-12-03 22:11:23+00:00,2023-12-05 01:06:18+00:00,{},"…st file
+When I added the original code, for some reason I just plain forgot that the ""name"" and ""description"" fields were already being used in the EquipmentInfo object, and would have made much more sense to reuse. This PR allows for those properties to be used in place of ""short_description"" and ""long_description"". I haven't removed the previous property names, so no OXP will break."
+1615305788,allowing snapshot on long range chart,phkb,2023-11-24 06:32:02+00:00,2023-11-24 07:32:01+00:00,{},"Not much more to say, really!"
+1609981092,Auto-switches the case on keys when shift is changed manually,phkb,2023-11-20 23:20:53+00:00,2023-11-23 05:32:33+00:00,{},Trying to limit ways of entering invalid key combinations.
+1605437960,Updating binary resources to latest,phkb,2023-11-17 00:03:12+00:00,2023-11-17 00:23:40+00:00,{},Getting the updated Sidewinder Escort normalmap
+1605425870,Update sidewinder escort,phkb,2023-11-16 23:46:43+00:00,2023-11-16 23:49:06+00:00,{},We were missing the normal map for the Sidewinder Escort
+1602474171,Hostile lollipops in colorblind mode,AnotherCommander,2023-11-15 12:38:49+00:00,2023-11-18 13:41:29+00:00,{},"This is an accessibility oriented pull request. The idea is to make hostile ships on the scanner more easily distinguishable for colorblind people.
+
+The colorblind mode algorithms we have enhance contrast of displayed colors to make them easily distinguishable as different. Still, sometimes when there is a lot going on in the screen, some additional visual clues would be good for persons who have trouble distinguishing key colors, even if we modify the contrast to make it easier for them. With this PR, in addition to the colorblind filters in use, we change the lollipop blips of hostile ships to an X instead of a square. This way, it only takes one quick look on the scanner and all hostiles can be easily identified.
+
+This is something I had wanted to add for a long time now and is also consistent with color blindness accessibility best practices (don't just change the color, change the shape of key game elements as well if you can)."
+1597874484,use full version info on asset,HiranChaudhuri,2023-11-12 19:38:02+00:00,2023-11-12 19:38:16+00:00,{},Now we can drop all deliverables in a single directory and still figure out which is which in correct sequence.
+1597538501,Harmonize output filenames,HiranChaudhuri,2023-11-11 21:43:22+00:00,2023-11-11 21:43:40+00:00,{},
+1597275014,distinguish Windows test releases from other releases,HiranChaudhuri,2023-11-11 07:27:38+00:00,2023-11-11 07:27:50+00:00,{},
+1595273372,We have now three linux and three windows builds plus documentation,HiranChaudhuri,2023-11-09 23:31:56+00:00,2023-11-09 23:32:11+00:00,{},
+1592336784,Add release information and more linux builds,HiranChaudhuri,2023-11-08 10:38:47+00:00,2023-11-08 10:39:36+00:00,{},
+1577279384,Updated icon in all locations,phkb,2023-10-27 22:48:49+00:00,2023-10-28 00:24:10+00:00,{},
+1569732734,grouping works if documentation is on declaration rather than impleme…,HiranChaudhuri,2023-10-23 18:40:27+00:00,2023-10-23 18:40:48+00:00,{},…ntation
+1553379560,Splinters that have cargo_carried defined will use that on spawn,phkb,2023-10-12 04:08:07+00:00,2023-10-16 21:42:30+00:00,{},"Currently, regardless of what a splinter might have defined, it will always be given minerals when it is spawned from mining a boulder. This patch will check for the ""cargo_carried"" property in shipdata, and if found, will allow it to define the makeup of the splinter. If no ""cargo_carried"" property is defined, the default behaviour will apply."
+1539286019,Expanding ship.canAwardEquipment to allow other contexts,phkb,2023-10-03 05:14:18+00:00,2023-10-08 08:17:24+00:00,{},"For real, this time!
+
+By default, the ""canAwardEquipment"" checks the equipment with the ""scripted"" context. This PR allows other contexts to be tested on an equipment item. 
+
+For example:
+`player.ship.canAwardEquipment(""EQ_NAVAL_ENERGY_UNIT"")` will return true. This is because, with the ""scripted"" context, it is allowed to be awarded to the player. However, there are restrictions on whether you can purchase the equipment or not. With this PR, you can do the following:
+`player.ship.canAwardEquipment(""EQ_NAVAL_ENERGY_UNIT"", ""purchase"")`, which will return false if the player has not yet completed the mission it relates to."
+1539197552,Expands ship.canAwardEquipment for other contexts,phkb,2023-10-03 03:38:38+00:00,2023-10-03 05:08:12+00:00,{},"By default, the ""canAwardEquipment"" checks the equipment with the ""scripted"" context. This PR allows other contexts to be tested on an equipment item. 
+
+For example:
+`player.ship.canAwardEquipment(""EQ_NAVAL_ENERGY_UNIT"")` will return true. This is because, with the ""scripted"" context, it is allowed to be awarded to the player. However, there are restrictions on whether you can purchase the equipment or not. With this PR, you can do the following:
+`player.ship.canAwardEquipment(""EQ_NAVAL_ENERGY_UNIT"", ""purchase"")`, which will return false if the player has not yet completed the mission it relates to."
+1529847640,Witchjump js enhancements,phkb,2023-09-26 04:34:39+00:00,2023-10-01 05:12:39+00:00,{},"This PR is a QOL enhancement for witch space jumps. It adds the jump cause to all jump events, so each event can know what type of jump was performed. It also adds a new property to the player ship, ""previousSystem"", which holds the originating system ID from where the player has come. It will be in the range of -1 to 255.
+
+On a programming note, I'm not happy with these lines:
+`
+ShipScriptEvent(context, self, ""shipWillEnterWitchspace"", STRING_TO_JSVAL(JS_InternString(context, [[self jumpCause] UTF8String])), INT_TO_JSVAL([w_hole destination]));
+`
+
+Something feels off with the number of conversions I'm doing to pass the jump cause to the STRING_TO_JSVAL function. If there's a better way, please let me know! Ideally I'd like to return to the ""NoCx"" version of ""ShipScriptEvent"" (and therefore removing the requirement to grab the context), so if there's a way to do that as well, I'm all ears!"
+1513174380,Fixes issue where dest ID not being passed to shipWillEnterWitchspace…,phkb,2023-09-13 04:28:45+00:00,2023-09-13 09:26:52+00:00,{},"… when cause = carried
+(Should have been ""missing"" not ""mission"" in branch name. Not hugely important. But only noticed after pushing)."
+1509004377,Correction to logic for homeSystem function in priorityai,phkb,2023-09-10 04:34:54+00:00,2023-09-11 08:47:50+00:00,{},And let's not talk about my complete brain fade ever again.
+1505427695,fix for issue with not being able to use numbers on text entry missio…,phkb,2023-09-07 00:05:30+00:00,2023-09-09 22:07:15+00:00,{},…n screens
+1497944352,Fix for possible memory leak on Mac,phkb,2023-08-31 22:18:43+00:00,2023-09-06 21:31:43+00:00,{},"This is a fix for a possible memory leak on the Mac based on the info here: [https://blog.vucica.net/2011/06/avoiding-memory-leak-in-openal-and-crash-in-openal-for-mac.html](url)
+
+I've been running this change in my local build (Windows) for a while without impact. But it would be good to hear from others (on Linux particularly) to make sure there is no obvious issues there before merging.
+
+It may not be a fix for the issue with sounds on Mac, but it might help."
+1496265658,Small tweaks and bugfixes for some javascript functions,phkb,2023-08-30 23:18:16+00:00,2023-08-31 21:48:32+00:00,{},"A couple of protections against null/missing values, and a fix for pre-1.84 market properties."
+1490554819,Forces the F5 hyperspace destination and the witchspace destination o…,phkb,2023-08-26 08:25:30+00:00,2023-08-30 07:31:03+00:00,{},"…n the HUD to honour the concealment property
+
+Will now display ""(Unknown)"" when the system name of a targeted system has been hidden."
+1490544938,Adds ability to define custom keys on most gui screens,phkb,2023-08-26 07:54:19+00:00,2023-08-26 08:16:51+00:00,{},"(resubmitted because I messed up the rebase)
+
+One of the problems that has developed over time is the confusing list of F4 Interface screens that are added by OXP's. It doesn't take long for the list to become long and unwieldy.
+
+The problem is that the F4 page is the only place to put a mission screen page. Even if the mission page is specifically related to the market, or the chart, or the system info view, they all have to go on the F4 page with some basic grouping as the only way to arrange things.
+
+Coupled with this is the usefulness some of the pages have beyond the station. It makes sense to be able to view chart related info, or market info, as provided by an OXP, while in flight. The message has always been ""do not show mission screens in flight,"" but that logic is counter to the fact that we can view the status screen, the manifest screen, do all sorts of interactions on the chart screen, view the market info page, all while in flight.
+
+This PR aims to address both these issues. First, a new global function has been added, ""setExtraGuiScreenKeys"", which allows key functions to be registered on a specific gui screen. So, for example, the ""Ctrl-G"" key combination could be registered on the F6 chart screen. When the key combination is pressed on that screen, the callback function is called, similar to how the callback function is called for an F4 interfaces page. Each key combination defined in the properties is given a reference key, which will be passed to the callback function to identify what key combination was pressed.
+
+By being able to link a mission screen to a specific GUI screen, some of the clutter on the F4 screen can be reduced.
+
+Secondly, the warning message about showing mission screens in flight has been removed. Along with this, the ""allowInterrupt"" flag is defaulted to YES in all cases when in flight, which prevents a mission screen from locking the player out of their viewscreen. Ship models are already ignored in flight, and the exit screen will default to the main view.
+
+The following is an example of setting up a new definition:
+```
+setExtraGuiScreenKeys(this.name, {
+    guiScreen:""GUI_SCREEN_MANIFEST"",
+    registerKeys:{""key1"":[{key:""g"",mod1:true}]},
+    callback:this.$myGuiScreenCallback.bind(this)
+});
+```
+The format of the method is similar to the station.setInterface method. The key (""this.name"" in the above example) can be registered once per GUI_SCREEN. Multiple key combinations can be specified in the ""registerKeys"" property. Using the same key and GUI_SCREEN will overwrite the previous settings.
+
+There is also a method to remove the extra key definition:
+```
+clearExtraGuiScreenKeys(this.name, ""GUI_SCREEN_MANIFEST"");
+```
+
+This small OXP (an update to the RegisterKeysDemo1 used previously), demonstrates implementing the system: [RegisterKeysDemo1_v2.oxp.zip](https://app.box.com/s/z0y9x6f0y22go2o12o0z25oelkmmqbwc)"
+1478293396,Extra gui screen keys,phkb,2023-08-17 02:56:16+00:00,2023-08-26 07:32:00+00:00,{},"One of the probelms that has developed over time is the confusing list of F4 Interface screens that are added by OXP's. It doesn't take long for the list to become long and unwieldy.
+
+The problem is that the F4 page is the only place to put a mission screen page. Even if the mission page is specifically related to the market, or the chart, or the system info view, they all have to go on the F4 page with some basic grouping as the only way to arrange things.
+
+Coupled with this is the usefulness some of the pages have beyond the station. It makes sense to be able to view chart related info, or market info, as provided by an OXP, while in flight. The message has always been ""do not show mission screens in flight,"" but that logic is counter to the fact that we can view the status screen, the manifest screen, do all sorts of interactions on the chart screen, view the market info page, all while in flight.
+
+This PR aims to address both these issues. First, a new global function has been added, ""setExtraGuiScreenKeys"", which allows key functions to be registered on a specific gui screen. So, for example, the ""Ctrl-G"" key combination could be registered on the F6 chart screen. When the key combination is pressed on that screen, the callback function is called, similar to how the callback function is called for an F4 interfaces page. Each key combination defined in the properties is given a reference key, which will be passed to the callback function to identify what key combination was pressed.
+
+By being able to link a mission screen to a specific GUI screen, some of the clutter on the F4 screen can be reduced.
+
+Secondly, the warning message about showing mission screens in flight has been removed. Along with this, the ""allowInterrupt"" flag is defaulted to YES in all cases when in flight, which prevents a mission screen from locking the player out of their viewscreen. Ship models are already ignored in flight, and the exit screen will default to the main view.
+
+The following is an example of setting up a new definition:
+```
+setExtraGuiScreenKeys(this.name, {
+    guiScreen:""GUI_SCREEN_MANIFEST"",
+    registerKeys:{""key1"":[{key:""g"",mod1:true}]},
+    callback:this.$myGuiScreenCallback.bind(this)
+});
+```
+The format of the method is similar to the station.setInterface method. The key (""this.name"" in the above example) can be registered once per GUI_SCREEN. Multiple key combinations can be specified in the ""registerKeys"" property. Using the same key and GUI_SCREEN will overwrite the previous settings.
+
+There is also a method to remove the extra key definition:
+```
+clearExtraGuiScreenKeys(this.name, ""GUI_SCREEN_MANIFEST"");
+```
+
+This small OXP (an update to the RegisterKeysDemo1 used previously), demonstrates implementing the system: [RegisterKeysDemo1_v2.oxp.zip](https://app.box.com/s/z0y9x6f0y22go2o12o0z25oelkmmqbwc)"
+1475301853,updates to the OoliteRS and OoliteReadMe ODT files,phkb,2023-08-15 00:58:38+00:00,2023-10-17 02:19:43+00:00,{},
+1472570955,Fixing issue where attempting to open the keyboard layout screen was …,phkb,2023-08-12 02:18:08+00:00,2023-08-12 02:39:36+00:00,{},…causing a game crash
+1467693778,Better monitoring of the shift key when entering a new definition.,phkb,2023-08-08 22:40:31+00:00,2023-08-10 07:12:39+00:00,{},"Checking for both shifted and unshifted characters, and changing the shift flag as appropriate. Plus extra text to aid in understanding what to do."
+1464355692,Adding ability to define additional keys on a mission screen,phkb,2023-08-06 22:30:38+00:00,2023-08-13 03:49:27+00:00,{},"Presently, the only key a mission screen can watch for is the ""enter"" key, when the player presses it on a choice. This limits what can be done with UI design.
+
+This PR aims to correct this by allowing any key (including function keys or shift/ctrl/alt combinations) to be registered on a mission screen, with the callback function being called when one is pressed. Two changes are needed for a mission screen to make use of this feature.
+
+1. Add the ""registerKeys"" property to the options dictionary. This property lists all the desired keys for the mission screen in a dictionary object. For example:
+```
+this.$openScreen = function () {
+    var opts = {
+        screenID: ""myScreenID"",
+        title: ""Sample Title"",
+        message: ""A sample screen."",
+        choices: {""default"":{""text"":""Press ESC to exit""}},
+        registerKeys: {""escape"":[{key:""esc""}]}
+    };
+    mission.runScreen(opts, this.$myScreenHandler.bind(this), this);
+}
+```
+2. Add the ""keyPress"" parameter to the callback function. This parameter is in addition to the existing ""choice"" parameter. It will contain the dictionary key name for the registered key. For example:
+```
+this.$myScreenHandler = function(choice, keyPress) {
+    if (keyPress != ""escape"") this.$openScreen(); 
+}
+```
+
+I've put together 3 examples demonstrating the new functionality:
+[https://app.box.com/s/hinwftyta6krpensmygi1ydcbd2e9xw7](url) Uses the arrow keys to enter a 4 digit code.
+[https://app.box.com/s/cxdeap7fnlakui57vyoebdyelsh247iz](url) Allows character entry to search for systems on the chart.
+[https://app.box.com/s/w2405pvgs2dlxq22y154ubwjx0vhxchr](url) Recreates the F3F3 Shipyard, responding to the arrow up/down keys to change the displayed ship.
+"
+1463934896,Dark Mode Support on Windows,AnotherCommander,2023-08-05 19:43:48+00:00,2023-08-06 15:30:02+00:00,{},"Apps by default are set to render their windows in light mode for compatibility reasons. However, ideally they should conform to the users' preferences and the light / dark mode setting happens to be one of the most important ones due to its immediate visible effect on presentation. With this PR, the Windows personalization dark / light color mode setting is now honored by the game window.
+
+Oolite now detects the light / dark UI mode setting and adjusts itself as required. Additionally, it listens for real-time changes of the setting and can re-adjust on the fly if the user change their preference with the game window open and running.
+
+Example image showing dark mode: 
+
+![Oolite Dark Mode](https://imgur.com/be1dG9R.png)"
+1462434467,Adding beginGalacticHyperspaceCountdown to playership,phkb,2023-08-04 07:00:11+00:00,2023-08-06 15:17:18+00:00,{},
+1447396151,Map keys to oxp equipment,phkb,2023-07-24 21:23:37+00:00,2023-08-02 07:53:41+00:00,{},
+1440259307,Fix for index out of range error if HUD does not define any MFD's and…,phkb,2023-07-19 03:37:47+00:00,2023-07-19 05:32:30+00:00,{},… player tries to select one
+1432082111,Do not block on error: Updated submodule to latest version,HiranChaudhuri,2023-07-12 22:45:58+00:00,2023-07-12 22:46:35+00:00,{},
+1426415912,Ensure the startup script shows a notification on Oolite failure. ,HiranChaudhuri,2023-07-09 19:41:28+00:00,2023-07-12 21:45:31+00:00,{},"Resolve the issue described in http://aegidian.org/bb/viewtopic.php?f=9&t=21402
+A matching commit will be on branch doNotBlockOnError in the oolite-linux-dependencies repository"
+1410764142,fix FdL in shipyard to match with max missile in shipdata,phkb,2023-06-28 00:12:06+00:00,2023-06-28 10:11:41+00:00,{},
+1410580825,Inject oolite version into other documents,HiranChaudhuri,2023-06-27 20:52:02+00:00,2023-06-29 16:57:06+00:00,{},All but the LibreOffice documents get their version bumped by build process.
+1397041984,Build pdfs,HiranChaudhuri,2023-06-18 08:20:33+00:00,2023-06-18 20:34:00+00:00,{},"This removes the duplicate information of odt and pdf documents in the repository. Instead, the PDFs are automatically generated.
+With that developers no longer need to remember generating PDFs after updating the odt documentation, and at release time we do not have to check if the PDF shows the latest information.
+
+I verified the (not released) linux build artifact. For windows someone might want to check as well."
+1357957726,GUI background and foreground images are now treated as having SRGBA internal format,AnotherCommander,2023-05-20 13:23:35+00:00,2023-05-22 05:58:53+00:00,{},"GUI textures like backgrounds, foregrounds etc. are not processed in any way after having been loaded. However, they are subject to tone nmapping and gamma correction at the end of the render pass because they are part of the final scene texture. So we need to declare them as SRGBA textures when they are loaded so that OpenGL will automatically convert them to linear space and the subsequent tone mapping and gamma correction shader operations will not result in heavy distortion of their colors due to over-correction.
+
+This should fix #412."
+1355472759,Create LICENSE with content based on Doc/LICENSE.TXT,HiranChaudhuri,2023-05-18 10:07:39+00:00,2023-06-29 16:58:54+00:00,{},Reasoning is to have the license at the standard location where Github and others expect to find it.
+1344647767,Resolve compiler warnings,sparr,2023-05-10 03:16:45+00:00,,{},This PR resolves a number of outstanding warnings when compiling with gcc. More details in the commit messages.
+1344614948,Fix gcc -Werror=format-security,sparr,2023-05-10 02:27:35+00:00,2023-05-13 10:23:19+00:00,{},Similar to #417 and https://github.com/OoliteProject/oolite/commit/0866adf9b9a4479d045a53a1ce24157fd736afa5 this PR supplies a literal format string to avoid the `format-security` error produced by gcc.
+1315186437,Build linux,HiranChaudhuri,2023-04-15 17:30:14+00:00,2023-04-15 17:53:41+00:00,{},This workflow will create releases that contain both Windows and Ubuntu Linux builds.
+1314963460,Alternative,HiranChaudhuri,2023-04-15 08:04:28+00:00,2023-04-15 08:05:27+00:00,{},Undo the unintended merge.
+1314949849,Alternative,HiranChaudhuri,2023-04-15 07:22:48+00:00,2023-04-15 07:22:58+00:00,{},
+1314620334,add Ubuntu build,HiranChaudhuri,2023-04-14 19:14:55+00:00,2023-04-15 07:22:59+00:00,{},"We can now build on Ubuntu again.
+For changes on master a release is created, for changes on other branches a prerelease is created. 
+This will allow to use the CI/CD pipeline for both releases and for development."
+1311261427,Updated README.md with Ubuntu compilation instructions,tsoj,2023-04-12 17:57:19+00:00,2023-04-13 05:33:01+00:00,{},:)
+1212645594,HDR output display detection on Windows,AnotherCommander,2023-01-22 16:03:48+00:00,2023-02-09 11:13:13+00:00,{},"The main feature this PR implements is HDR display device detection capability on Windows. If -hdr has been passed as startup parameter, we now check whether the primary display (which is where Oolite starts on) is HDR enabled and notify the user in case it is not. If no HDR display capable primary device has been found, the user has the choice to launch the game anyway or quit.
+
+Additionally contained in this PR are the following:
+- The minimum Wibndows version requirement is hereby raised to Windows 7 64-bit. This is due to the Win APIs used for HDR detection.
+- The main thread's priority is now elevated to Time Critical when the game window has focus, When focus is lost, the main thread is returned to normal priority again.
+- If a valid window surface could not be created at startup, Oolite issues a message that subsequent game launches will be skipping the splash screen, in a last ditch attempt for a fix. It does not, however, update the defaults file with the -nosplash screen setting, as it is supposed to. This is now fixed.
+
+
+"
+1130405905,Better organized README.md for compiling on Linux,tsoj,2022-11-21 17:46:54+00:00,2022-11-21 18:38:42+00:00,{},"It took me quite some time to compile on Fedora Linux, so I thought it might be a good idea to add all the information needed to do this to the README.md."
+1118208564,Support for HDR display devices on Windows,AnotherCommander,2022-11-10 19:37:33+00:00,2022-11-13 16:42:47+00:00,{},"This PR implements output to HDR displays on Windows.
+
+The implementation supports display devices (e.g. LCD / OLED TVs or HDR monitors) with up to 1000 nits peak brightness capability. To use it, you must first switch Windows HDR on (Start->Settings -> Display->Toggle HDR switch). Once HDR is enabled, Oolite can be run with the -hdr command line parameter to activate rendering to floating point backbuffer. HDR mode offers a much improved visual experience, with brighter highlights and darker shadows, at the same time without losing detail in any of the two and generating a crisp image with an extended color gamut.  
+
+HDR output is implemented in the scRGB color space with 16 bits for each color component and alpha. For optimal results a basic calibration has been included in the Game Options screen. The user must first set the closest maximum brightness value matching their display specs. This value can be selected from the following set: 400, 500, 600, 800 or 1000 nits. Then, they should adjust the paper white brightness level to their preference.  Paper white can range from 80 to 280 nits. The selected values are automatically saved in the user defaults file. The Wireframe Graphics option has been removed from the Game Options screen when in HDR mode, as it makes no sense to run wireframe on HDR, plus there is no screen real estate left to accommodate all options, so the least used one goes away.
+
+The tone mapper in use is tuned for 1000 nits output and is based on the Krysztof Narkowicz ACES approximation found on [this page.](https://knarkowicz.wordpress.com/2016/08/31/hdr-display-first-steps/)
+
+Known issue: screenshots generated in HDR mode are not correct. Fixing this may require a future upgrade of libpng to a more recent version with expanded png support.
+
+Finally, it is noted that a new version of the SDL.dll specifically built for Oolite is required for the implementation to work. The PR takes care of this. Regarding platform support, currently this is Windows-only. Linux users are kindly requested to check that the code contained in the PR builds on Linux without issues, although no HDR support will be available."
+1086596191,Like ship accumulates shipyard entries,dybal,2022-10-13 20:15:00+00:00,2022-10-13 20:15:57+00:00,{},
+1031307482,Render to framebuffer,AnotherCommander,2022-08-19 15:38:58+00:00,2022-08-27 21:51:18+00:00,{},"Thanks to the hard work by tsoj, our graphics engine has been upgraded with the capability to render to framebuffer. This pull request is an extension of tsoj's work, taking the initial render to franebuffer implementation and adding the following:
+
+- Full HDR support. We now render the full scene to a floating point framebuffer, then apply ACES tonemapping and gamma correction before sending off to screen for display.
+- Bloom. The effect can be toggled on and off with the F9 key. I tried to keep it as modest and subtle, yet effective as possible.
+- Post processing effects. We have five post processing effects available: cloak vision, colorblindness correction filters for protanopia, deuteranopia and tritanopia and grayscale. The effects can be controlled by script by means of the JSGlobal object _postFX_ and more can be added in the future.
+- The cloaking device is now using the cloak vision post effect when activated.
+- The minimum required OpenGL version has been raised to 3.3. Should be OK for all today's computers.
+
+Linux (and hopefully Mac) users, please make sure that the code in this PR builds correctly and runs for you. If all is good, we can proceed with merging to master. If there are any concerns, please feel free to bring them up before we go for the  merge. I think we can give it a few days for testing to happen."
+989479546,Fix for weapon spec in shipyard not being applied to new ships,phkb,2022-07-06 23:08:50+00:00,2022-07-07 21:39:26+00:00,{},
+986909577,Adds ability to unset a key definition,phkb,2022-07-05 01:19:33+00:00,2022-07-05 21:55:21+00:00,{},
+986031584,Adjusts descriptions on fast activation pages for better clarity,phkb,2022-07-04 06:03:33+00:00,2022-07-04 23:50:11+00:00,{},"The goal here is to make the fast activation screen clearer, so the player doesn't have to know what key is associated with ""fast activate defense"" and ""fast activate offense"". "
+985680304,"Extra joystick mappings, reorganised list, alignment with keyconfig d…",phkb,2022-07-03 09:19:29+00:00,2022-07-04 05:20:52+00:00,{},"…escriptions
+Also added headings to the joystick mapping pages (similar to the keyconfig screen)."
+979168427,Added option for startUp script time limit,tsoj,2022-06-26 00:03:39+00:00,2022-06-26 08:33:42+00:00,{},"Fixes issue #400, by allowing to customize the time limit of startUp scripts in the `oolite.plist` config file. Defaults to previous value of 5 seconds."
+815806940,Activated Github Actions,HiranChaudhuri,2022-01-06 20:07:39+00:00,2022-01-22 20:59:28+00:00,{},"We have now Github Actions that automatically execute on every push and that execute on the three target operating systems Linux, MacOS and Windows.
+
+The scripts perform nothing or fail - we still need to refine the correct build. But here are the necessary stubs."
+811261137,New keyconfig,phkb,2021-12-29 04:37:32+00:00,2022-06-30 10:17:57+00:00,{},"This PR adds the ability to set keyboard configuration within the game itself, rather than relying only on an external plist file. In this PR, the old file plist file, keyconfig.plist, is obsolete. A new version of the file, keyconfig2.plist, is instead in play, along with mapping files for Windows, Linux and Mac machines. 
+
+The keyconfig2.plist file follows this format:
+```
+{
+	""default"" = { // name of the definition
+		key_roll_left = ({ // name of the key control (in this case 'Roll left'
+			key = ""arrowLeft""; // name of the key to use for this function
+		});
+		...
+	};
+	...
+}
+```
+The key definitions are an array of dictionary items, allowing for multiple keys to define a single function. Each key can also have modifier flags set, being ""shift"", ""mod1"" (ie Control) and ""mod2"" (Alt on PC/Linux, Command on Mac).
+
+Each definition must align with an equivalent set of codes in the ""keymappings_windows.plist""/""keymappings_linux.plist""/""keymappings_mac.plist"" file. These files map the keyboard scancodes to a unicode value, based on the keyboard layout. Note: scan codes vary between WIndows, Linux and Mac systems.
+
+The keymappings_*.plist files follows this format:
+```
+{
+	""default"" = { // name of the definition, which must match a definition in the keyconfig2.plist file
+		description = ""Default (US) keyboard"";  // description of this layout
+		mapping_normal = { // scancode to unicode mapping for unshifted keys
+			""41"" = 96; // ` key
+			""2"" = 49; // 1 key
+			""3"" = 50; // 2 key
+			...
+		};
+		mapping_shifted = { // scancode to unicode mapping for shifted keys
+			""41"" = 126; // ~ key
+			""2"" = 33; // ! key
+			""3"" = 64; // @ key
+			...
+		};
+
+	};
+	...
+}
+```
+Multiple definitions have been set up in the supplied mapping files, covering US English (default), UK English, German, Italian, Norwegian, French, Danish, Dutch, Greek, Spanish, Swedish, Portuguese and Brazilian. More definitions can be added via OXP.
+
+The keyboard configuration screens in game can be found on the ""Game Options"" screen, below the ""Joystick Configuration"" item:
+![image](https://user-images.githubusercontent.com/10691987/147627583-1318be29-add5-497d-bfd8-bfcf51644f2b.png)
+The keyboard layout can be selected at the top of the screen. 
+![image](https://user-images.githubusercontent.com/10691987/147627592-4efb27ce-a691-45cb-8317-97ce6c723fc6.png)
+Selecting a key function will take the user to a second screen, where primary and secondary key definitions can be set.
+![image](https://user-images.githubusercontent.com/10691987/147627772-06f3649e-2d0f-42d6-8bca-678679f10884.png)
+
+
+All changes are stored in the .GNUStepDefaults file to be loaded back in when the game is restarted.
+"
+808497886,Update oolite.desktop,HiranChaudhuri,2021-12-22 15:26:14+00:00,2021-12-30 21:46:39+00:00,{},"This desktop file added an icon to the desktop manager. But as soon as the application was started it was not recognized as this icon being active, and another icon would get displayed for the active window. With this patch the desktop manager can correctly identify the window and just mark the existing icon as being active."
+802473461,Added setVolume to JavaScript interface,tsoj,2021-12-14 15:36:43+00:00,2021-12-15 14:41:54+00:00,{},"[Relevant post on the forum](http://www.aegidian.org/bb/viewtopic.php?p=280941#p280941).
+
+Here is a short exemplary OXP that makes use of this new function:
+```javascript
+""use strict"";
+
+this._volume = 1.0;
+this._addition = -0.05;
+this._timer = null;
+
+this._changeVolume = function() {
+	this._volume += this._addition;
+
+	if(this._volume >= 1.0)
+		this._addition = -0.05;
+	if(this._volume <= 0.0)
+		this._addition = 0.05;
+	
+	this._volume = Math.min(Math.max(this._volume, 0.0), 1.0);
+	
+	Sound.setVolume(this._volume); // sets the volume of the currently playing music
+}
+
+
+this.shipLaunchedFromStation = function(stationLaunchedFrom)
+{
+	Sound.playMusic(""yourmusicfile.ogg"", false, 1.0);
+	this._timer = new Timer(this, this._changeVolume.bind(this), 5, 0.1);
+}
+```
+It starts a song when undocking, and then fades in and fades out again."
+696079971,Fix for correct context when adding weapons to player ship,phkb,2021-07-23 16:51:17+00:00,2021-08-04 06:04:46+00:00,{},"Adding a weapon to the player ship via a script passes a ""purchase"" context through to the ""allowAwardEquipment"" condition script call, even when the weapon is added via script. This code change enforces the ""scripted"" context when a weapon change is made by script."
+614387057,Formatting on AI.m,ghost,2021-04-13 11:38:39+00:00,2021-04-15 17:44:31+00:00,{},### Formatting on AI.m
+614384218,Prettier Formatting on AI.h,ghost,2021-04-13 11:33:47+00:00,2023-04-24 19:07:43+00:00,{},
+577041863,Add update all option to OXP manager,tsoj,2021-02-21 03:07:27+00:00,2021-02-22 15:16:33+00:00,{},"Implements #341.
+
+~In some scenarios, it is necessary to ""update installed expansion packs"" multiple times. For example, if an installed OXP doesn't have the required dependencies already installed at the time of startup, it won't be installed in the first run of ""update all"". (Can be reproduced if one manually decreases the version number in the manifest of the local OXZ of FeudalStates and Planetfall).  
+But I think that these situations shouldn't even happen in the first place, so this shouldn't be a big problem.~ I fixed this with the third commit.
+
+~Unfortunately, I messed something up with GIT so there are some merge conflicts, I'll just create this pull request and then I'll see if I can fix it somehow.~ I believe I solved it."
+576540756,"Adding ""setShipInfoForKey""",tsoj,2021-02-19 15:37:49+00:00,2021-02-20 17:32:03+00:00,{},"This should add the javascript function `function setShipDataForKey(datakey : String, newShipData : Object)` that sets the shipdata for a specific datakey. This will allow OXPs to fiddle with the properties of all ships directly. For example, an OXP that sets the `shipdata.max_yaw` value to 60% that of `shipdata.max_pitch`, emulating a similar mechanic in Elite: Dangerous, where the maximum yaw is smaller than the pitch. Or an OXP that re-evaluates the prices of ships in the shipyard.
+
+I also added some helpful tips for compiling on Linux.
+
+This is a draft because I am not sure, if I introduced memory leaks, as I don't know Objective-C very well."
+541189038,Derelict desctruction is not a kill,dybal,2020-12-16 14:06:00+00:00,,{},"This PR fixes a scenario where the player can increase his rank by searching derelicts left from NPC's conflicts and destroying them.
+
+It increases the player's score when a NPC chooses (as implemented at the core game level, at ShipEntity's takeEnergyDamage) to abandon ship when its energy is too low after a hit from a player's attack, which has the added benefit of allowing players with moral restrictions to killing to improve their ranking (which is necessary for progress in many of the core game careers)."
+541147858,Script assing to weapon mount fix,dybal,2020-12-16 12:58:49+00:00,2021-08-04 06:05:31+00:00,{},"This PR fixes a bug when a weapon is assigned to a weaponMount by script: if the weapon has a condition_script with allowAwardEquipment defined, it is being called with context ""purchase"" instead of ""scripted"". (ship.awardEquipment, which is used to award everything but weapons, already sets the context to ""scripted"")
+
+That breaks Ship Storage Helper OXP when it tries to restore a ship that has a laser with purchase restrictions, such as Weapon Laws OXP creates.
+
+To replicate the bug, install Weapon Laws OXP and try to assign EQ_WEAPON_MILITARY_LASER to a ship at Lave with the Debug Console. The Military laser will not be available in the Ship Outfitting, due to the condition_scripts' allowAwardEquipment allowing purchase of it only in Anarchies, Feudal States and Multi-government systems, but it allows the award in context scripted, npc, etc., so it should be possible for a script to assign it."
+512367449,Unlock Game Load/Save screen when paused while docked.,KonstantinosSykas,2020-10-29 15:37:29+00:00,2020-11-14 17:55:55+00:00,{},"Currently if you pause when in Game Load/Save screen and while docked the controls are locked and no options can be altered. On the other hand if you pause while in flight and activate the Game Load/Save screen then options are available for configuration.
+This change is to ensure Game Load/Save screen consistent behavior when paused while docked and when paused while in flight. "
+512358542,Add game paused message in Game Options when in flight.,KonstantinosSykas,2020-10-29 15:26:22+00:00,2020-11-15 19:54:26+00:00,{},"Add message to exit pause, when paused in flight and Game Load/Save screen is active."
+509584445,Fix an error reported by gcc about format-security,bcoconni,2020-10-25 12:25:11+00:00,2020-10-27 06:59:10+00:00,{},"On Fedora 32, gcc 10.2.1 reports an error:
+```bash
+ Compiling file src/SDL/MyOpenGLView.m ...
+src/SDL/MyOpenGLView.m: In function ‘-[MyOpenGLView init]’:
+src/SDL/MyOpenGLView.m:327:2: error: format not a string literal and no format arguments [-Werror=format-security]
+  327 |  OOLog(@""display.initGL"", @""Achieved color / depth buffer sizes (bits):"");
+      |  ^
+cc1obj: some warnings being treated as errors
+```
+This PR fixes the issue on my system."
+491108940,Doesn't block an equipment installation if an incompatible equipment had been installed but has already been removed,dybal,2020-09-22 18:08:16+00:00,,{},"An equipmentKey isn't removed from oolite-equipment-control's this.$equipmentEnabled dictionary keys when an equipment is removed, the value for that key is changed to 0 if the equipment was removed (and to 1 if it's installed or re-installed).
+
+So not all keys in this.$equipmentEnabled represent equipments that are installed in the ship and it's necessary to check the value for that key in the dictionary to make sure the equipment is installed and only after that look for the equipments incompatible with it.
+
+Without this correction, if an equipment was installed it would block the installation of equipments incompatible with it even after it was uninstalled.
+
+To reproduce, install Smivs Battle Damage OXP and remove the equipment EQ_HULL_REPAIR from a ship and then try to award it back (it's incompatible with self)"
+475911025,Adds weaponInfo to EquipmentInfo script object,dybal,2020-08-30 13:23:51+00:00,2020-09-01 07:57:00+00:00,{},"weapon_info was included in equipment.plist in v1.81, but there's no way for scripts to recover that information, so I added it to EquipmentInfo scripting object as 'weaponInfo', a dictionary with the weapon_info fields from equipment.plist (used scripInfo as template)
+
+I have been using this mod for 9 days (Towbar v0.105 's Laser Reductor uses it to set the amount of energy to give back when a derelicts is hit), the glitches were all on the script side.
+
+There are a few other OXPs that use weapon_info, but they are expecting a dictionary with name ""weapon_info""... the property I added is camel case, like all other scripting object's properties, so those OXPs will have to be updated to use the new property"
+472355417,adding extra laser sounds and associated config,phkb,2020-08-24 08:31:16+00:00,2020-08-24 10:59:36+00:00,{},
+467146792,Added check to avoid null values in equipmentInfo items,phkb,2020-08-13 05:00:10+00:00,2020-08-13 05:02:49+00:00,{},And added a variable declaration
+466475800,Ensure any equipment incompatibility refs are enforced,phkb,2020-08-12 02:59:36+00:00,2020-08-12 05:56:55+00:00,{},Regardless of the order of loading
+466386850,Update xcconfig settings:,MaddTheSane,2020-08-11 22:22:49+00:00,,{},"* Quiet new warnings.
+* Add arm64 symbol file."
+464394007,Increasing opacity of cursor for increased visibility,phkb,2020-08-07 05:14:30+00:00,2020-08-07 05:22:45+00:00,{},Especially on 4K displays
+456881200,Check and update of doc using latest LibreOffice,phkb,2020-07-27 03:53:25+00:00,2020-07-28 05:19:11+00:00,{},"After the issue with the PDF doc being messed up, I went back to the process I used and had another look at the odt file. It appears that the original odt file was not opening successfully in the latest LibreOffice (6.4.5.2). This PR corrects the formatting and layout issues, bringing it up to date with this release of LibreOffice, and the exported PDF file has image DPI set at 600 for slightly clearer ship images.
+
+If someone has an earlier version of LibreOffice it would be beneficial to check this PR out and see if everything is still aligned nicely."
+455991063,Changes shape of icon on basic compass when station is target,phkb,2020-07-23 22:54:49+00:00,2020-07-24 07:15:56+00:00,{},"Makes it clearer what is being targeted.
+Code contributed by forum member Milo."
+455379171,Protection for ship launches,phkb,2020-07-22 22:06:38+00:00,2020-07-23 12:02:18+00:00,{},In case where ship is too big for a dock and can't be launched.
+455255938,Error report has incorrect name,phkb,2020-07-22 17:28:54+00:00,2020-07-22 17:37:43+00:00,{},
+452982131,Provides an override mechanism for the amount of time a rescue in an …,phkb,2020-07-20 02:52:43+00:00,2020-07-20 07:04:36+00:00,{},"…escape pod takes.
+Player.escapePodRescueTime will be added to game time when player is rescued, overriding the existing calculation (which can be up to 8 days). If escapePodRescueTime is 0, default will be used. If the escape pod is activated and a value is set, it will be reset to 0 after the rescue."
+441731288,Missiles in ship missiles array do not have a primary role,phkb,2020-06-30 01:37:13+00:00,2020-06-30 05:52:11+00:00,{},equipmentKey should be used instead
+441687456,Fix for the thargoidStrikes populator setting,phkb,2020-06-29 22:46:12+00:00,2020-06-30 05:52:40+00:00,{},
+441180670,Adding activeMissile property,phkb,2020-06-29 03:56:21+00:00,2020-06-29 05:21:31+00:00,{},To allow scripts to know which of the missiles is currently selected
+437605259,Adding 'IsSunlit' to entity,phkb,2020-06-21 21:46:23+00:00,2020-06-22 05:41:50+00:00,{},Allowing scripts to determine if entity is in shadow or not
+412622835,fix typo,cheese1,2020-05-03 15:48:37+00:00,2020-05-03 17:31:56+00:00,{},
+354401098,New nav beacon,phkb,2019-12-18 02:56:55+00:00,2019-12-28 23:50:16+00:00,{},"Utilitises (with permission) Cmd. Cheyd's DH Navigation Buoy to replace the core buoy model, bringing this item into more visual alignment with Griff's detailed textures."
+298315454,Adding ability to use custom sounds for specific lasers,phkb,2019-07-17 05:52:51+00:00,2020-08-18 05:26:50+00:00,{},"This PR adds the ability to link custom sounds to particular lasers, missiles and mines. The purpose here was to make a high-powered weapon sound different to a low-powered one, and for a laser hit to sound different to a missile hit. The following keys are now available in the ""weapon_info"" dictionary of an equipment definition. Each of the ""fx_*"" keys is a reference to a key entry in the customsounds.plist file.
+
+	fx_shot_miss_name		Played when weapon is fired but does not hit anything (laser weapons only).
+	fx_shot_hit_name		Played when weapon is fired and hits another ship (laser weapons only).
+	fx_hitplayer_shielded_name	Played when weapon hits the player ship while shields are up.
+	fx_hitplayer_unshielded_name	Played when weapon hits the player ship while shields are down.
+	fx_weapon_launch_name		Played when the weapon is launched (missiles and mines only).
+
+For missiles and mines, which don't currently use the ""weapon_info"" dictionary, it can be added to their definition in equipment.plist in the following form:
+```
+	weapon_info = {
+		fx_weapon_launch_name = ""[missile-launched]"";
+		fx_hitplayer_shielded_name = ""[player-hit-by-weapon]"";
+		fx_hitplayer_unshielded_name = ""[player-direct-hit]"";
+	};
+```
+If nothing is defined, existing sound effects will apply for all lasers, missiles and mines.
+
+The plasma turret doesn't have a firing sound, but the sound when plasma shots hit the player can be overridden by an OXP by adding the following to an equipment.plist file:
+```
+(
+	(
+		0,
+		0,
+		""Plasma shot"",
+		""EQ_WEAPON_PLASMA_SHOT"",
+		""Holding item used for overriding sound of plasma shot hit."",
+		{
+			available_to_all = no;
+			available_to_NPCs = no;
+			available_to_player = no;
+			visible = no;
+			weapon_info = {
+				fx_hitplayer_shielded_name = ""[player-hit-by-weapon]"";
+				fx_hitplayer_unshielded_name = ""[player-direct-hit]"";
+			};
+		}
+	)
+)
+```
+A sample OXP which demonstrates most of these keys is linked here: [LaserMissileSoundVariation.oxz](https://app.box.com/s/pnm93aw2pcbzfmd5iof1lmjtoan4xep2)"
+282271270,Adding support for equipment-overrides.plist,phkb,2019-05-26 04:50:01+00:00,2019-07-02 04:01:22+00:00,{},"Adds the ability to process equipment-overrides.plist files, which allows OXP authors to more easily update existing equipment items without needing to copy the entire equipment.plist entry in order to do so. Also, it reduces the potential conflicts where two OXP's want to update the same equipment item. It doesn't solve the issue of two OXP's wanting to update the same properties of said equipment item - the last overrides file will still be the winner here, which is the same for the shipdata-overrides file.
+
+The format of the equipment-overrides.plist is slightly different to the equipment.plist file by necessity. A sample file is shown:
+```
+{
+	""EQ_WEAPON_PULSE_LASER"" = {
+		techlevel = 7;
+		price = 50000;
+		short_description = ""Laser Pointer"";
+		long_description = ""A simple, all purpose (but weak) laser. Only useful for irritating pirates."";
+		available_to_all = YES;
+		weapon_info = {
+			color = ""whiteColor"";
+		};
+	};
+}
+```
+Notes: I'm not sure I like where I've put the interface to the routine - it feels kind of tacked-on rather than part of a deliberate design. But on the flip side, the current location means we don't have to make the equipment array mutable (again), do the overrides, and make it immutable (yet again), which feels slow and inefficient. Open to suggestions on this one.
+"
+274984894,Limiting star and nebula textures by galaxy,phkb,2019-05-01 08:54:42+00:00,2019-05-25 12:16:16+00:00,{},"This adds the ability to limit star and nebula textures to particular galaxies, providing the opportunity to make galaxies more visually unique. 
+
+At the same time, in order to make the merging of star and nebula textures more logical and consistent, they are now being merged on the ""texture"" key. Therefore, if an OXP overrides the ""oolite-nebula-1.png"" definition in a ""nebulatextures.plist"" file (for instance, adding a galaxy or changing the probability), they can be confident this change has been applied. To allow for the same texture to appear in multiple galaxies, an optional ""key"" property can be added to the dictionary, which will take the place of the ""texture"" property when merging the arrays.
+
+To demonstrate this, use the following in place of the current nebulatextures.plist, which will allocate one nebula image per galaxy.
+
+```
+(
+	{
+		texture = ""oolite-nebula-1.png"";
+		probability = 1.0;
+		galaxy = 0;
+	},
+	{
+		texture = ""oolite-nebula-2.png"";
+		probability = 1.0;
+		galaxy = 1;
+	},
+	{
+		texture = ""oolite-nebula-3.png"";
+		probability = 1.0;
+		galaxy = 2;
+	},
+	{
+		texture = ""oolite-nebula-4.png"";
+		probability = 1.0;
+		galaxy = 3;
+	},
+	{
+		texture = ""oolite-nebula-1.png"";
+		key = ""nebula1-gal4"";
+		probability = 1.0;
+		galaxy = 4;
+	},
+	{
+		texture = ""oolite-nebula-2.png"";
+		key = ""nebula2-gal5"";
+		probability = 1.0;
+		galaxy = 5;
+	},
+	{
+		texture = ""oolite-nebula-3.png"";
+		key = ""nebula3-gal6"";
+		probability = 1.0;
+		galaxy = 6;
+	},
+	{
+		texture = ""oolite-nebula-4.png"";
+		key = ""nebula4-gal7"";
+		probability = 1.0;
+		galaxy = 7;
+	}
+)
+
+```
+If no ""galaxy"" property is set, existing behaviour should be unchanged.
+
+Outstanding: I really need someone to confirm I've done the alloc/dealloc correctly. 
+"
+274705397,Adding playerWillBuyNewShip world event,phkb,2019-04-30 12:12:03+00:00,2019-05-01 08:19:46+00:00,{},"Gives OXP's an opportunity to do something before the player ship is actually sold/replaced.
+Event is in two forms: 
+
+1. When player actually buys a ship from the F3F3 shipyard.
+  `this.playerWillBuyNewShip = function(shipKey, shipyard_info, price, tradeIn) {  }`
+
+2. When player ship is changed via the JS method player.replaceShip(""shipkey"")
+  `this.playerWillBuyNewShip = function(shipKey) {  }`"
+274548306,"Adding EquipmentInfo.calculatedPrice property, adding 'paid' param to…",phkb,2019-04-29 22:44:48+00:00,2019-04-30 10:44:28+00:00,{},"… playerBoughtEquipment event
+
+These two changes help with gaining better visibility of equipment prices.
+
+EquipmentInfo.calculatedPrice is the calculated price of the equipment item, if the equipment item utilises the updateEquipmentPrice() condition script function.
+
+Adding the ""paid"" parameter to the playerBoughtEquipment event gives instant visibility of the actual price paid by the player, taking into account any rebates or adjustments in the purchase.
+"
+274000287,Main menu revamp: Replacing View Keyboard Settings menu item with Game Options. Game Opt…,AnotherCommander,2019-04-26 18:50:13+00:00,2019-04-28 09:06:18+00:00,{},"…ions items that are controlled by savegames are greyed out when viewed from the intro screen. Some code refactoring. Testing required, especially stick mapping."
+271912888,station.shipyard generates shipyard when hasShipyard is false,phkb,2019-04-19 05:59:08+00:00,2019-04-19 09:09:14+00:00,{},"(2nd try)
+`station.shipyard` was incorrectly creating shipyard entries even when `hasShipyard` was false."
+271911422,Station shipyard bugfix,phkb,2019-04-19 05:47:40+00:00,2019-04-19 05:48:30+00:00,{},"Performing `station.shipyard` was generating shipyard entries even when `hasShipyard` was false. The shipyard wasn't ever visible to the player, but the data would be created unnecessarily.
+This PR now returns a null value for `station.shipyard` if `hasShipyard` is false."
+271141298,addShipToShipyard look for and add lasers from extras array,phkb,2019-04-17 03:06:35+00:00,2019-04-18 12:15:07+00:00,{},"This is so a laser weapon can be included in ""extras"" array and added to the ship."
+270356145,More code protection and better use of consts,phkb,2019-04-15 02:59:00+00:00,2019-04-16 05:03:49+00:00,{},
+269960627,Provides JS access to the shipyard of a station,phkb,2019-04-12 10:40:16+00:00,2019-04-12 19:27:40+00:00,{},"Adds station.shipyard property to station to view current ships in shipyard.
+Adds station.addShipToShipyard to add new ship to shipyard
+Adds station.removeShipFromShipyard to remove a ship from the shipyard.
+
+eg of adding ship:
+```
+    var def = {
+        short_description:""A sample ship to demonstrate adding a ship to the shipyard"",
+        shipdata_key:""cobra1_player_able"",
+        price:120000,
+        personality:Math.floor(Math.random() * 32768),
+        extras:[""EQ_FUEL_INJECTION"",""EQ_GAL_DRIVE""]
+    };
+    player.ship.dockedStation.addShipToShipyard(def);
+```
+
+eg of removing ship
+ `   player.ship.dockedStation.removeShipFromShipyard(1); // removes ship at index position 1`
+"
+268568099,Keyboard controls to cycle and select MFD's in reverse,phkb,2019-04-09 03:21:35+00:00,2019-04-09 14:52:38+00:00,{},"Adds the ability to cycle an MFD in the reverse direction, and to select the previous MFD, by holding down CTRL when pressing "":"" or "";""."
+268027867,16 bits per color component as startup parameter,AnotherCommander,2019-04-06 10:40:33+00:00,2019-04-12 14:57:09+00:00,{},"Trying to find a fix for the color banding issue that we see sometimes on planets on any graphics card that does not do dithering. Seems to work well on Windows, Linux needs some more testing but it seems to work too.
+
+The solution is to request OpenGL to set up a 16 bits per color component buffer on stasrtup. However, since there has been one report of 100% usage on the video card (not reproducible at this time), we set the 16bpcc only as an option, if the user requests it. The option can be toggled from both the command line and the defaults file."
+245719762,Enable toggling HUD during gameplay,clintmoyer,2019-01-18 03:42:48+00:00,2019-12-19 01:17:34+00:00,{},"This change enables the HUD to be toggled any time with the ""o"" key. Previously this was restricted to the pause menu only. This effect is quite different from the other Debugging Keys and makes more sense to enable this to be toggled at all times.
+
+#322 "
+245688901,Check energy,clintmoyer,2019-01-18 00:14:31+00:00,2019-01-18 05:47:09+00:00,{},Provides an explicit check to [checkEnergy](https://github.com/OoliteProject/oolite/blob/1.88/src/Core/Entities/ShipEntityAI.m#L1511) for both the outer bounds and the Medium Energy level. Also adds message `ENERGY_GONE` when depleted.
+245020682,Change FAQ reference from PLAYING.TXT to controller wiki,clintmoyer,2019-01-16 04:38:05+00:00,2019-01-16 20:17:58+00:00,{},"The FAQ in the documentation was referencing a non-existent file PLAYING.TXT to provide controller information specific to the Oolite project. This file is not present in the repository and so we can instead link to the Wiki.
+
+Closes #319"
+244277475,Fix Mac builds,JensAyton,2019-01-13 12:57:39+00:00,,{},"These are the changes required to build with Xcode 10, which will bring back nightly builds. It also updates various project files, breaking compatibility with older versions of Xcode.
+
+Done as a PR because merging this will drop support for Mac OS X 10.6 (the 2009–2010 version)."
+223807907,Adds commsMessageReceived worldScript event when player.commsMessage …,phkb,2018-10-18 02:36:04+00:00,2018-11-07 16:45:56+00:00,{},…function is called
+223478407,New atmosphere shader,AnotherCommander,2018-10-17 06:05:41+00:00,2018-10-17 13:43:53+00:00,{},"This is a new atmosphere shader which uses a Fresnel torus around the planet to produce the effect. Overall it looks better than what we had till now.
+
+Performance seems unchanged according to initial tests and some simplifications have been made in the shader to reduce the amount of calculations done. The fade in and out effect at large distances has been removed because it no longer seems necessary. 
+
+I intend to merge this very soon, so if there are any comments or objections, about now would be a good time to be put forward. :-)
+"
+222932317,fix issue where Station JS AI was not triggering an alertConditionCha…,phkb,2018-10-15 14:43:57+00:00,2018-10-17 05:18:04+00:00,{},…nged event
+202118019,Prevent energy damage application when player in escape pod,phkb,2018-07-18 01:53:00+00:00,2018-07-20 12:46:52+00:00,{},
+200562164,Fixing memory leak in setScreenTextureDescriptorForKey,phkb,2018-07-11 01:07:59+00:00,2018-07-11 11:16:39+00:00,{},
+198554600,Edit gui color settings in gui-settings.plist,phkb,2018-07-02 01:29:26+00:00,2018-07-10 14:56:16+00:00,{},"I haven't added functions for all the different value types in ""gui-settings.plist"" - just the color ones for the moment. And I'm not sure about my method of checking if the setting key is color-related. There might be a better way of doing this."
+198173933,playerCancelledJumpCountdown JS event not firing when starting autopilot,phkb,2018-06-28 22:51:14+00:00,2018-06-29 08:49:45+00:00,{},
+185447427,Mousewheel handling,AnotherCommander,2018-05-02 13:58:51+00:00,2018-06-16 19:26:52+00:00,{},"I would like to incorporate the new mousewheel handling into master, but I need some help with testing on Linux and Mac. @OoliteProject/developers Please let me know if this implementation is deemed satisfactory. The request is _not_ expected to be merged, unless both Linux and Mac positive reports have been received."
+180530935,Optimization: Explosion Culling,AnotherCommander,2018-04-10 08:51:43+00:00,2018-04-26 15:19:49+00:00,{},"You may have noticed already that, sometimes, entity count jumps quite a bit, then drops quickly back down to its previous levels. This is often due to explosions. They tend to generate a number of entities that are added to the universe at the moment of the explosion and are removed shortly after, once their life has expired. This happens every time as part of the simulation, regardless of where the explosion takes place. Very often, the amount of entities being generated results in momentary stutter.
+
+This change tries to minimize the side effects of explosions happening. We now generate all those extra entities only if the object that exploded was visible in the first place. Regardless of visibility, the explosion is rendered normally if it has happened within scanner range (so e.g. an escape pod exploding will always have a visible explosion, although it stops being visible past 5000m or so).
+
+Initial testing indicates that long distance battles are still noticeable like before. This is because most ship entities have visibility ranges well beyond scanner range. However, some exaggerations we have now are avoided. Up to now, the explosion of an Anaconda going off next to the station could be seen from the witchpoint, which strikes me as kind of silly and does not help with the sense of scale much.
+
+So, we will hopefully now have a bit better performance by not generating way too distant entities, but because I consider this change not such a trivial one, I'd like some feedback from your side. During my tests, I also noticed a very rare case of crashing while loading a saved game, which may or may not be related; I can't see why the proposed change might cause crashes, but I did not have any crashes at all before, so... please check if you can."
+172472848,Introducing the %G###### string expander. It works like the %J### one…,AnotherCommander,2018-03-02 10:45:49+00:00,2018-03-06 10:16:43+00:00,{},"…, but it takes two triplets of numbers rather than one, namely the system ID followed by the galaxy ID. This way we can refer to planet names in galaxies other than where the player is. %J### remains for compatibility reasons. Updated Constrictor Hunt mission strings to eliminate hard coded references to Xeer in the mission texts."
+168131047,"Adds player.ship.chartHighlightMode property, and chartHighlightModeC…",phkb,2018-02-09 01:18:09+00:00,2018-02-17 09:19:06+00:00,{},…hanged event
+167844912,Rescaling Experiment IV,Redspear-of-Oolite,2018-02-08 00:11:48+00:00,,{},"Needs sun distance modifer setting (planetinfo.plist was too big for me to edit here).
+I tested and recommend a value of  6.6
+Think I've added everything... we'll see..."
+159304079,Adds extra chart configuration options for mission screens,phkb,2017-12-20 00:22:24+00:00,2017-12-29 12:12:19+00:00,{},"Adds ""SHORT_RANGE_CHART_SHORTEST"" and ""SHORT_RANGE_CHART_QUICKEST"" to the backgroundSpecial list. Also adds ""CUSTOM_CHART"", ""CUSTOM_CHART_QUICKEST"", and ""CUSTOM_CHART_SHORTEST"" backgroundSpecial types. These types make use of runScreen options ""customChartZoom"", ""customChartCentre"" and ""customChartCentreInLY"" to allow for a completely customised mission chart screen."
+158234759,Multipage primable equip,phkb,2017-12-13 23:43:42+00:00,2017-12-16 11:55:58+00:00,{},Adds multi-page support to the primable equipment manager.
+156736063,Windows Resources Addition & Manifest Embedding,AnotherCommander,2017-12-06 13:59:17+00:00,2017-12-12 13:10:49+00:00,{},"This PR is Windows-specific only, but I would like to have it tested before commiting, because it touches files used by the Linux build process, but also because it is a different way for handling some particular OS requirements of the Windows port of the game.
+
+A set of resource files for Windows have been added to the build process. They should be usable and accessible by the Windows build only. Linux should be able to continue to build unaffected. These resource files at this time contain information about the icon to use for the executable and, more importantly, the application manifest, which Windows reads and acts on as required.
+
+The embedded manifest tackles two previous issues at the same time and allows us also to simplify the core code quite a bit. The two issues are the high-DPI support and the reporting of the OS version we are running on. Both of them are already solved in master, but at the expense of loading and executing kernel functions at runtime to do the work for us. A fine solution, but maybe less elegant than we would like. The manifest is the Microsoft recommended way of doing this and it leaves the door open for potential future settings to be handled therein. Microsoft is using manifests quite a lot from what it seems and this may be the trend in the future, so supporting this kind of set up is probably a good idea overall.
+
+And of course, we get a nice icon on our Oolite executable as a bonus (yay). 
+
+So, please check at your own convenience and leisure and confirm that:
+- The Linux build process is unaffected
+- High-DPI support works just like before (all previous high-DPI code has been stripped in this PR and there are no reports like ""SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE) loaded and executed"" - it needs to be tested with various DPI settings and on multiple monitors
+- Windows 8 and higher versions are reported correctly in the log file (example: ""Opening log for Oolite version 1.87 (x86-64 test release) under Windows 10.0.16299  64-bit at 2017-12-06 ..."")."
+150500653,Bumps master branch version number to 1.87,jobi-wan,2017-11-03 11:02:41+00:00,2017-11-04 18:15:16+00:00,{},"Should master be labeled 1.87 now, so that OXPs that use new features can 'require' it?"
+149280200,Unbalanced braces break function dropdown in xcode IDE,jobi-wan,2017-10-27 20:33:36+00:00,2017-10-28 16:14:34+00:00,{},"This is really nothing, but it breaks the function dropdown menu in the xcode IDE."
+149279871,Scripting: adds 'pauseGame()' method to pause the game from script,jobi-wan,2017-10-27 20:31:51+00:00,2017-10-28 19:36:26+00:00,{},"Suggestion by Commander Astrobe to be able to pause the game from script
+http://www.aegidian.org/bb/viewtopic.php?f=6&t=18900
+"
+149279560,Scripting: Makes pitch/roll/yaw for playerShip writable,jobi-wan,2017-10-27 20:30:01+00:00,2017-10-28 19:37:00+00:00,{},"In a discussion about the reverse-control behavior, it was suggested that pitch/roll/yaw for playership be writable. 
+http://www.aegidian.org/bb/viewtopic.php?f=6&t=9142"
+149279026,Implements mouse wheel for Mac,jobi-wan,2017-10-27 20:27:17+00:00,2017-10-28 11:09:15+00:00,{},"This implementation is pretty much identical to the SDL side.
+
+http://www.aegidian.org/bb/viewtopic.php?f=6&t=18927
+"
+147540380,Warnings and analyzer issues,jobi-wan,2017-10-19 12:16:26+00:00,,{},"This branch addresses a bunch of compiler warnings and analyzer issues. 
+See individual commits for details."
+147540376,Bumps Copyright year to 2017,jobi-wan,2017-10-19 12:16:24+00:00,2017-10-19 13:20:36+00:00,{},"Copyright line in license says 2004-2011.
+Changed 2011 into 2017 as that is the current year"
+146280201,Prevents recalculating route every frame on Chart view,jobi-wan,2017-10-12 18:23:20+00:00,2017-10-13 12:33:09+00:00,{},This completes the code that was already in place to prevent unnecessary recalculation of routes.
+145510048,Implements MyOpenGLView::resetMouse for Mac,jobi-wan,2017-10-09 17:41:46+00:00,2017-10-09 19:19:59+00:00,{},"This recenters the virtual joystick and warps the mouse cursor to the center of the screen, in order to have the same functionality as its SDL equivalent resetMouse method."
+145335640,Gnustep complaints,kanthoney,2017-10-08 13:46:43+00:00,2017-10-08 14:41:56+00:00,{},"I've just switch distros on my laptop, and ran into a couple of compilation problems.  The main one is an issue that's happened before - if there's a line such as 
+
+```
+OOLog(@""category"", @""message"");
+```
+
+the compile fails because a modern GNUstep release includes a `-Werror=format-security` switch which insists that you replace the line with something like
+
+```
+OOLog(@""category"", @""%@"", @""message"");
+```
+
+This is more secure if there's a possibility that the @""message"" string is user provided. None of ours are, but the damn thing is going to keep complaining until we give in and fix it, so that's what this pull request does. It is possible to fix this temporarily by editing `GNUstep/Makefiles/config.make` and changing the switch to `-Wformat-security`, but every time there's a GNUstep update it gets changed back again.
+
+Another GNUstep annoyance is that the compile switch `-Wp,-D_FORTIFY_SWITCH=2` is included. This isn't compatible with the `-O0` switch used in debug builds, so every file produces a warning:
+
+```
+ Compiling file src/Core/Entities/DustEntity.m ...
+In file included from /usr/include/bits/libc-header-start.h:33:0,
+                 from /usr/include/math.h:27,
+                 from src/Core/OOCocoa.h:33,
+                 from src/Core/Entities/Entity.h:28,
+                 from src/Core/Entities/DustEntity.h:27,
+                 from src/Core/Entities/DustEntity.m:25:
+/usr/include/features.h:373:4: warning: #warning _FORTIFY_SOURCE requires compiling with optimization (-O) [-Wcpp]
+ #  warning _FORTIFY_SOURCE requires compiling with optimization (-O)
+    ^~~~~~~
+```
+
+It is only a warning though, so doesn't break the build. I haven't found a way around this other than removing the offending compiler switch from `GNUstep/Makefiles/config.make`.
+
+"
+141268645,making playership.compassTarget readwrite,phkb,2017-09-15 09:38:52+00:00,2017-09-29 17:17:53+00:00,{},"Open to suggestions here. I believe this code works as intended, but there may be an easier way of doing this than what I've implemented here. I was trying to avoid having to re-write all the compass mode code into a new function, and this seemed like the simplest way to achieve that. Let me know what you think."
+139483468,Adds primedEquipment property and playerChangedPrimedEquipment event,phkb,2017-09-06 06:45:52+00:00,2017-09-12 19:36:24+00:00,{},
+133340090,Adds get/set method to adjust values for screenbackgrounds.plist keys,phkb,2017-07-31 21:21:39+00:00,2017-08-06 07:07:28+00:00,{},"I don't know what I'm doing wrong, but I can seem to create a pull request from my fork that doesn't include all the pull requests I've done to rebase it. On the positive side, there are only three changed files now, which should mean that only the change I've requested should go in.
+
+I'm actually wondering if I should delete my fork and recreate it, then do the pull request."
+133336369,Screenbackgroundforkey get set,phkb,2017-07-31 21:01:40+00:00,2017-07-31 21:02:01+00:00,{},
+132862217,Adds functions to access and change key values in screenbackgrounds.plist via JS ,phkb,2017-07-27 22:48:19+00:00,2017-07-31 20:33:22+00:00,{},"Currently the function names are ""getScreenBackgroundDefault(keyname)"" and ""setScreenBackgroundDefault(keyname, guiTextureSpecifier)"". 
+This change will provide a way for scripts to see and override whatever settings have been loaded from screenbackgrounds.plist. Any changes are during the current play session only and are not saved."
+131694812,"Adds a ""display_color"" property to equipment items, used on equip ship screen",phkb,2017-07-21 04:09:05+00:00,2017-07-28 09:08:55+00:00,{},
+131207288,Adds handling of page up/down keys on most screens that can have mult…,phkb,2017-07-18 23:16:20+00:00,2017-07-20 19:42:17+00:00,{},…iple pages
+128259354,"[RFC,WIP] Initial experimental SDL2 support",sjnewbury,2017-06-29 22:17:40+00:00,,{},"This is an initial (mostly working) port to SDL2.
+
+By default SDL1.2 is still used, but by chaning the config.make
+option, SDL2 is used instead as a build-time option.
+
+For current status see commit message and issue #222 
+
+
+"
+125065704,Adds events and controls for MFDs and primed equipment,phkb,2017-06-12 06:04:52+00:00,2017-06-18 13:04:37+00:00,{},This update hopefully provides the events and methods that will allow OXP devs to automatically prime a piece of equipment whenever an MFD is selected or changed by the player. There are two new events (selectedMFDChanged and mfdKeyChanged) and one new method (player.ship.setPrimedEquipment). 
+124349701,Fix Travis builds,JensAyton,2017-06-07 07:06:09+00:00,2017-06-07 14:07:11+00:00,{},I _think_ this will fix it.
+123162781,Adding 'addCargoEntity' method to player ship,phkb,2017-05-30 23:11:09+00:00,2017-06-03 21:54:30+00:00,{},"This adds the ""addCargoEntity"" to the player ship, allowing cargo entities to be added directly to the players cargo hold. 1 required param (the actual cargo entity, which must be a valid cargo entity currently in space somewhere), 2 optional params: processEvents (bool, default false) to indicate whether normal scooping events (eg shipScoopedOther) should be executed; processMessages (bool, default false) to indicate whether normal scooping messages (eg ""You rescued Bill Gates"")  should be displayed."
+122110960,F7 screen config and layout,phkb,2017-05-23 22:42:19+00:00,2017-05-26 14:27:15+00:00,{},"Opens the layout of the information on the F7 screen so that OXP's can potentially add their own information in the top part of the screen.
+
+Also, I've created an OXP to add a control layer to the layout, which can be found here: [SystemDataConfig_0.3.zip](https://app.box.com/s/zl24eisa5orvrrsskzbh5q137rijs887)"
+119491271,Perlin3D Planet and Atmosphere Textures as planetinfo.plist Option,AnotherCommander,2017-05-08 17:03:20+00:00,2017-05-13 16:55:27+00:00,{},"Rather than setting Perlin3D planet and atmosphere textures perference at compile time, I thought that it could be a better idea if we could have this selection as an option. This could motivate also contributors to try to optimize the Perlin3D code, too.
+
+This pull request implements this idea. The type of texture for planets and atmospheres can be set via the ""perlin_3d"" key in planetinfo.plist for each planet separately or for everything, if set inside the ""universal"" block. 
+
+By default we keep Perlin3D disabled due to its performance impact. There is an approximately two seconds delay on my system when viewing planets in the F7 screen with this enabled. Hyperspace transit takes somewhat longer too, as the new system textures get created. However, more powerful systems could maybe use this without getting too penalized, so it would be interesting to check the feature on more recent machines. "
+111546169,Rescaling experiment2,kanthoney,2017-03-20 12:56:33+00:00,2017-03-28 12:28:24+00:00,{},Merge of current master into rescalingExperiment2.  There was one minor merge conflict involving whitespace. I don't want to push it direct to the branch in case that makes it awkward for Redspear.
+111037413,Support for shader + texture atmosphere drawables simultaneously,AnotherCommander,2017-03-16 10:37:57+00:00,2017-03-18 23:21:16+00:00,{},"With the recent implementation of shader atmospheres, it became evident that the cloud effect (an internally generated texture) had to go, as the implementation was giving us only two options: either shader or texture atmosphere. The design also predicted that, if the shader atmosphere could not be generated for whatever reason, then there was an automatic fall-back to the texture  generated one.
+
+This PR enables both atmosphere types to co-exist and I believe the visual result is worth it. The implementation is relatively simple and relies on two atmosphere drawables being defined per planet. One is for a texture and the other is for a shader effect. The design tries to keep as close as possible to the earlier one. Now, a texture atmosphere is always generated, like in 1.84. The shader generated drawable is also attempted and, if for whatever reason this cannot happen (e.g. uncompilable shader or gfx set to less than Extra Detail), then the texture atmosphere alone is used.
+
+The PR contains some code that decides the radius of each of the drawables that may require further clarification. The idea is for the two drawables to co-exist, but if they both have the same dimensions there is visible interference between the two at the planet's edges. So, what we do is this: If both drawables are successfully created, then the shader one is set to the (standard) collision_radius + ATMOSPHERE_DEPTH, being the outmost, ""primary"" one and the texture drawable is set to just cover the planet. If the shader drawable is not created, then the texture one is set to the standard atmosphere radius, so that it looks the same as in 1.84. I believe this is OK for cosmetic reasons and did not indicate any gameplay problems during testing at various distances from the planet.
+
+And this is what it looks like, with an ambient level setting of 0.15:
+![disoimprovedatmo01](https://cloud.githubusercontent.com/assets/623526/23992350/d0e3a058-0a3c-11e7-8459-9235287d2617.jpg)
+![laveimprovedatmo02](https://cloud.githubusercontent.com/assets/623526/23992364/dbb36748-0a3c-11e7-8192-14db174f7a61.jpg)
+![raleorimprovedatmo01](https://cloud.githubusercontent.com/assets/623526/23992392/f7745708-0a3c-11e7-900a-137b0fea4aed.jpg)
+
+"
+97007263,Exposing the 'canDockShip' to Javascript to confirm if a ship can phy…,phkb,2016-12-07 21:08:07+00:00,2016-12-08 09:08:32+00:00,{},…sically dock at a station
+95590823,Adding additional system info to load screen,phkb,2016-11-28 22:38:49+00:00,2016-11-29 05:59:06+00:00,{},"Thanks to the assistance of another_commander, this code adds the economy, government and techlevel to the save game file, and then displays the appropriate graphical codes on the load screen when then save game is selected."
+86395486,Shady atmos alternative,AnotherCommander,2016-09-22 19:03:25+00:00,2016-09-23 15:03:48+00:00,{},"As already mentioned in the internal devs mailing list, this is a request to merge Commander_X's new atmosphere shader to master.
+
+The effect looks good and, on my system, offers about 10 FPS more than the atmosphere implementation we have now. The effect fades out when the atmosphere is entered or we move too far away from the planet. The effect's fade in/out distance as well as the fade in/out rate are planet radius dependent. The old effect is still applied on detail levels below Extra Detail.
+
+The shader can still use some optimizations but I think that it is now at a state where it can be imported to trunk and tested by a wider user base. 
+"
+76877421,Fix compile problems with gcc version 5,kanthoney,2016-07-10 16:28:54+00:00,2016-07-10 22:19:55+00:00,{'buildsystem': 1},"Current master fails to build on GCC 5, which doesn't allow format strings in e.g. `OOLog` to be straightforward strings with no parameters.
+"
+71824196,Travis CI,JensAyton,2016-05-29 10:56:07+00:00,2016-05-29 12:42:45+00:00,{},"- Sets up automatic integration builds on Mac OS X using Travis CI. This builds the project and the various Mac-specific bundles for each push and each pull request, and also runs the unit tests – all 13 of them.
+- Converts readme to Markdown so we can have a build status icon in it.
+- Updates the readme to vaguely reflect present reality – at least as seen from a Mac.
+"
+71822425,Test pr,JensAyton,2016-05-29 09:20:00+00:00,2016-05-29 10:43:31+00:00,{},"Testing Travis CI integration, do not merge
+"
+69032035,Mac fixup,JensAyton,2016-05-05 16:29:28+00:00,2016-05-06 19:03:52+00:00,{},"Boom.
+"
+66748633,System information facility for all systems on a route.,kanthoney,2016-04-16 20:13:59+00:00,2016-04-16 20:27:48+00:00,{},"Facility to allow the player to obtain information for all tthe systems along the planned route.  In the F7 system information screen, use of the left/right arrow keys will display information for the previous/next system along the route.  The home key displays information for the current home system, and the end key displays information for the target system.
+
+In the chart, the system for which information is displayed in F7 is highlighted with a blue circle.  This can be moved using Alt + left arrow/right arrow/home/end.
+"
+58518416,Proposed fix for issue #176 (Cache problems with rescaled models).,AnotherCommander,2016-02-06 11:44:33+00:00,2016-02-12 14:07:53+00:00,{},"This is the proposed resolution for the cache issues related to rescaling models (#176). Given that the cache is a high-risk area, I'd rather give a chance for the proposal to be reviewed first, rather than merging staight away.
+
+As per this PR, separate entries are now inserted in the cache for models of different scale factors, applying both to mesh and octree data. Before this patch, octree data was entered in the cache for only one scale factor and subsequent calls for creation at other scale factors would result in a model that had collision detection and volume calculation issues. This could have very well been the cause of some weird bugs reported rarely in the past, whereby a player ship would be apparently hit by ""something"" and get ejected at excessive velocities towards a random direction.
+
+The octree data is now tagged as ""modelname.dat-XX.YYY"", where XX.YYY is the scale factor referring to that particular model. Mesh caches were already getting tagged as separate entries for different scale factors, so now we bring also the octree tagging to work in the same manner. This resolves the main, quite serious, issue.
+
+This PR resolves also a secondary issue, which is the filling up of the cache file with irrelevant data about randomly scaled, internally generated wreckage models. This kind of random internal rescaling happens only for wreckages at this point. The solution here was to implement an alternative rescaling method in ShipEntity, where a boolean parameter is passed for decdiding whether to write the result of the generated model to cache or not. With this, only wreckage models of scale 1.000 are written in the cache, unless specifically requested otherwise by means of script, debug console commands etc.. There is no reason to write data about e.g. wreck1,dat-1.803, when this model is randomly rescaled and chances of it being requested again any time soon are extremely slim. It's probably best to leave room for other objects, with better hit chances and it is certainly cleaner. This fix applies to both octree and mesh data.
+
+I would also note that, before going with this solution, I had also looked at rescaling octrees using the already provided methods, However, this did not work out very well. With an octree at scale 1:1 in the cache, requesting a rescaled octree to 64 x original for example, is not the same as generating an octree for a 64x rescaled model from scratch.
+
+We know that the fix outlined in this PR works on Windows, as a test build has been circulated in the forums and the initial reports seem to indicate good functionality and no performance hits. If this could be tested across the three supported platforms, it would be great.
+"
+52189736,Sell option.,ocz1,2015-11-30 22:37:23+00:00,,{},"Equipments with identifiers ending with the ""_SELL"" suffix get a special treatment as ""sell options"".
+This different treatment includes:
+- Different textcolor in the equipment purchase menu (similar to the already implemented ""repair options"")
+- Price values are added to the player account instead of being subtracted.
+- {Price value}-{current player credits} checkback is ignored for ""sell options""(, as the price value is added).
+- {Weight value}-{current free cargo space} checkback is ignored for ""sell options""(, as that ""sale standin"" item should be removed directly after it has been awarded it to the ship. (At this point it is the responsibility of the OXP developers to remove it by script at once. This might be a source for bugs, though it worked fine in tests.)
+- A given weight value in ""sell options"" is being used to create a ""cargo space will be freed by X tons"" message at the end of the description.
+
+The current way for OXP developers to create a selling entry in the purchase menu, is to create standin items, holding the description text and linking to a script that will remove itself and the ""sold"" items and maybe even refunding credits. This method has proven to be powerful enough to lead to satisfying results, but it has shortcomings.
+- Sale entries don't stand out as much as the fine repair option. That's a shame. :) 
+- The sale entry's price will always be subtracted first, what makes a satisfiable presentation of refunded credits difficult.
+
+The changes I propose enables developers to create distinguishable ""Sale"" entries and still using the old method.
+"
+51925284,Adding a sell feature for equipment.,ocz1,2015-11-26 15:34:27+00:00,2015-11-30 20:15:46+00:00,{},"First things first. I hate git (the tool). This should be all files I have edited, but I struggled quite hard just to reach this point, where I can commit this proposal. On the way I lost the ability to compile the project to see if everything works. I did compile a running version before I tried to upload it to github and it worked quite well ( or I wouldn't have decided to upload it.)
+
+This changes add a new possible key for an item to equipment.plist: ""can_be_sold""
+The new method in ShipEntity.m ""canAddEquipmentForSale"" checks if an item has this new key, if its value is ""true"" and if this item already has been installed.
+Another check has been added to the equipment purchase GUI in PlayerEntity.m , that uses ""canAddEquipmentForSale"", to see, if it's installed and has the new key. In this case the item's identifier key will be left to be listed in the purchase screen, but later on its appearance changes. The textcolor of the entry changes to orange, much like the ""repair option"", the string ""Sell: "" is added to the title and other disclaimers are added to the description. Further the behaviour, when selected, changes to refunding the price and removing that item from the ship.
+
+Pro:
+- OXP developers get a simple way to add a sell option.
+- This sell option provides a unified look for all Items that use it.
+- The look of the sell option differs from regular purchase list entries, making them easier to spot and more distinguishable from other entries.
+
+Contra:
+- The sell option, as simple as it is, is quite inflexible at this point. If an OXP developer wants to do something different to sell an Item (different refund value, diff. techlevel, edited description texts, dependences to other equipment). In this case she/he has to fall back on using the old methods. Those methods don't provide the different ""Sell Option"" color.
+
+There are two ways to get rid of that contra point.
+- Adding more Keys to the item, that contain alternative data like techlevel or refund value. This may be implemented much like the ""weapon_info"" key. A ""sell_info"" key.
+- The second way is kinda cheap, but maybe the better solution. Adding another key that let developers change the textcolor of the purchase entry. This way they can mimic the design of the sell option (and as bonus of the repair option too) and have all the same possibilities as before. Choosing the color wisely should be left in the devel.'s hands. (Screwing around with colors just shows bad taste of the devel. and of the OXP and not of the game as a whole.) The colors can be limited to the colors of the repair and sell options, too. ""entry_color"" = ""blue""; (red, orange, aso. or standard_color, repair_color, sell_color).
+
+In any case a sell option in any form should left in-code, to give an example how an entry for selling should look like. Ohh, and my changes aren't usable on items, that can be installed multiple times.
+"
+43104759,Multiple laser mounts,cim--,2015-08-22 15:04:51+00:00,2015-08-23 19:57:45+00:00,"{'gameplay': 1, 'plists': 1}","This is a rewrite of the laser mount code to allow multiple mount points to be fitted on a single direction in a nicer way than the ""subentity"" pattern, including fitting multiple lasers on aft or side mounts, and including player ships.
+
+`weapon_mount_mode` is a new shipdata property which can be ""single"", ""split"" or ""multiply"". ""single""is the default value and duplicates 1.82 behaviour for backward compatibility. The other two change the expected value of `weapon_position_forward` (and the other three) from a vector expression to an array of vector expressions. ""split"" then splits the damage from the weapon across those positions - it's cosmetic only, so long as you hit with all of them; ""multiply"" is (mostly) equivalent to doing it with subentities in that each beam is a full power shot (though unlike the subentity solution, this has the heat and energy costs of that many full shots). You can't split some directions and multiply others, but I think that would be overcomplicating things - you can always make some custom lasers to get the same effect if you really want to do that.
+
+Here's an experiment with a Krait
+![oolite-617](https://cloud.githubusercontent.com/assets/4066616/9424497/781aa87c-48e6-11e5-9ee9-e40328fe6cd2.png)
+
+```
+weapon_mount_mode = ""split"";
+weapon_position_aft = (""0.0 0.0 -34.6"");
+weapon_position_forward = (
+    ""45 -1.5 7"",
+    ""-45 -1.5 7""
+);
+weapon_position_port = (""-45.0 0.0 -13.5"");
+weapon_position_starboard = (""45.0 0.0 -13.5"");
+```
+
+There is a minor incompatibility for OXPs - `ship.weaponPositionForward` is now an array of vectors rather than a vector - but that was only added in 1.77 and I don't think that much makes use of it.
+
+(Something which still probably needs doing: if the player ship has ""multiply"" weapons, the price of lasers should be multiplied by the number of mounts)
+"
+41942292,Fix the project to build under Xcode 7.,MaddTheSane,2015-08-07 23:28:04+00:00,2015-08-09 10:29:37+00:00,{},"Addresses #157.
+"
+36571809,Two pass planet slice,kanthoney,2015-05-30 20:50:36+00:00,,{},"Fix for #151, the imtermediate clear depth should be 50,000.
+
+The way this is supposed to work is by:
+
+1)  Making sure that every object is rendered either in pass 1 or pass 2, not having half an object rendered in both passes.  To facilitate this, at the beginning of the render a timestamp is generated, and as each object is drawn it is tagged with this timestamp.  On the second pass, if the object already has the correct timestamp it's passed over.
+
+2)  On the first pass (the one for more distant objects), the distance of the near side of the object is checked.  If it's within or close to the intermediate depth the object is punted to the second ""near object"" pass.  ""Close"" in this case means within 10% of the intermediate depth - using the exact figure led to odd effects (atmospheric disturbance, missing asteroids) if the near edge of the object is very close to the intermediate horizon.
+
+3)  If an object is left until the second pass, the far edge is checked and, if necessary, the far plane of the frustum for the second pass is extended so that the whole object is encompassed (the far plane is set to far edge + 10%).  This might cause problems if there's an extremely long object in the game, with one end close by and another end an extremely long way off.  I don't think there's anything close to that currently in the game, but if one turned up we could probably add a third pass for those.
+
+I haven't noticed any issues in the testing that I've done.
+"
+36080587,Update shipdata.plist,Norbylite,2015-05-23 02:08:37+00:00,2015-05-23 10:51:20+00:00,{},"Fix engine materials in oolite_template_viper, complement missing engine materials in oolite_template_viper-pursuit.
+"
+35869699,"Add fix for lighting bug, enabled by lighting-fix-tentative user default",kanthoney,2015-05-20 19:58:04+00:00,2015-05-21 07:13:04+00:00,{},"This is just the lighting fix from #146, enabled by setting the lighting-fix-tentative user default to YES.
+"
+35805584,Tumbling ships,kanthoney,2015-05-20 07:45:08+00:00,2015-08-14 10:57:18+00:00,{},"(I was going to leave this until post 1.82 release, but as it brought up a graphical glitch - and a fix for said glitch - I thought I'd let you look at it before release.)
+
+I've often thought that the way the spinning ships in Oolite rotated was rather boring compared to the original Elite, where they tumbled in a much more interesting way.  So I thought I'd try and reproduce the Elite style rotation.
+
+As it happened, this turned out to be an excellent stress test for the graphics engine, and it threw up a problem (see https://github.com/OoliteProject/oolite/commit/643566280a5f47c7455660ab2bc400f06d59438e).  After staring at this for a while, it looked to me as though any face which was exactly perpendicular to the x-axis wasn't being lit properly - it was either fully lit or fully unlit.  I think I've fixed this in https://github.com/OoliteProject/oolite/commit/e0cf14146b132a8b672b6501dd844d900f43cd7b, but there may be knock-on effects.
+"
+35360766,Fix compilation on Gentoo,kanthoney,2015-05-13 19:16:31+00:00,2015-05-17 08:15:25+00:00,{},"Fix for issue 139, the compilation failure on Gentoo.  Also tested on Debian.
+"
+35324503,Gui planets,kanthoney,2015-05-13 13:09:25+00:00,2015-05-15 15:55:09+00:00,{},"Fix for issue mentioned on the mailing list where the planet in the system info screen was being rendered at unusual sizes when the window has odd aspect ratios.  Obviously, this can be delayed until after 1.82 release.
+"
+35077435,Enum migration,MaddTheSane,2015-05-10 04:50:20+00:00,,{},"These patches migrate the usage of many `NSEnumeration` to this project's `foreach` and `foreachkey`, which translates to `for(...in...)` on systems that support it.
+
+See also #140 
+"
+35071581,Fast enumeration migration,MaddTheSane,2015-05-09 19:20:40+00:00,2015-05-10 04:43:55+00:00,{},"These patches migrate the usage of many `NSEnumeration` to this project's `foreach` and `foreachkey`, which translates to `for(...in...)` on systems that support it.
+"
+35026276,Attempt to fix scissor test failure (issue 136),kanthoney,2015-05-08 16:53:22+00:00,2015-05-09 10:19:38+00:00,{},"This is an attempt to fix issue 136.  There are two possible fixes, selected by setting the `issue_136_fix` user default to `0` (off), `1` (first fix) or `2` (second fix).
+
+As I can't test whether the code builds, I'd appreciate somebody else at least looking over it before merging to master.
+"
+33535774,Fov is now accessible through javascript.,DaymareOn,2015-04-17 11:27:46+00:00,,{},"Oolite.gameSettings.fov (read-only): player game option fov, in degrees
+PlayerShip.viewFov (read/write): current view fov, in degrees
+
+Tested with an oxp I'm currently working on.
+How could this pull request be validated? Do you want the oxp to test?
+"
+33100684,Target reticle positionning now takes the field of view into account.,DaymareOn,2015-04-11 09:30:39+00:00,2015-04-11 13:27:33+00:00,{},"This fixes the target reticle positionning issue in all 4 views + custom.
+"
+30805724,Added ability to increase and decrease the field of view.,DaymareOn,2015-03-09 22:17:50+00:00,2015-04-03 13:42:58+00:00,{},"This code is for review. Even if it works, it would benefit from some beautifying: renaming of variables, methods,  moving methods to the right place in the class, and of course I take every advice :-)
+"
+26795902,New string expander,JensAyton,2015-01-04 14:54:54+00:00,2015-01-07 07:44:11+00:00,{}," Original blurb from mailing list:
+
+> The goal is to remove the use of printf-style formatting operators in descriptions.plist (for both safety and consistency with the JS way of doing things), and also simplify call sites where string formatting is used. The downside is that the implementation requires some fairly deep macro magic.
+> 
+> The basic idea is that instead of code like this:
+> 
+> ``` objc
+> [NSString stringWithFormat:DESC(@""format-foo-f""), foo]
+> // format-foo-f expands to ""bla bla %.1f""
+> ```
+> 
+> or:
+> 
+> ``` objc
+> OOExpandDescriptionString(@""[format-bar]"", [UNIVERSE systemSeed], [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:bar] forKey:@""bar""], nil, nil, 0)
+> // format-bar expands to ""bla bla [bar]""
+> ```
+> 
+> you will get:
+> 
+> ``` objc
+> OOExpand(@""[format-baz]"", baz)
+> // format-baz expands to ""bla bla [baz|precision:1]""
+> ```
+> 
+> As per the example, this also adds a concept of formatting operators, to handle things like numerical precision. Other operators so far are ""cr"" and ""dcr"" for credit formatting (dcr takes a value in tenths of credits).
+
+To do:
+- [x] Test on Windows
+- [x] Test on Linux
+- [x] Document changed keys for translators
+
+To don’t:
+- <del>[ ] Convert every single thing to the new way before merging</del>
+"
+26091847,More equipment customisation,cim--,2014-12-15 18:52:08+00:00,2014-12-15 18:52:21+00:00,{},"A bunch of changes to make equipment definitions more flexible and OXPable.
+
+Summary:
+- `PS.maxAftShield`, `PS.maxForwardShield`, `PS.forwardShieldRechargeRate`, `PS.aftShieldRechargeRate` now writable
+- `PS.heatInsulation` now writable
+- `S.cargoSpaceCapacity` now writable and change to how large cargo bay is implemented internally
+- `equipmentAdded` and `equipmentRemoved` ship/world events to make monitoring ship equipment status easier
+- Various equipment items allow easier OXP changes to their functionality.
+- Concept of ""provides"" for equipment - e.g. a ""navigation computer"" item could provide ASC and Docking Computer. `S.hasEquipmentProviding(key)` method to allow easier OXP use of this.
+- New `S.injectorBurnRate` and `S.injectorSpeedFactor` properties to control injector properties per-ship
+- New `S.scanDescription` property for customising the ""legal status"" text through the STE
+- New `updateEquipmentPrice` condition script function for modifying the price of equipment
+"
+22981580,Static planetinfo,cim--,2014-10-19 15:16:50+00:00,2014-11-02 19:32:57+00:00,"{'enhancement': 1, 'javascript': 1, 'plists': 1}","This seems - eventually - to be working again. Please test it and report any errors: this is a huge change (even not counting the 80,000 lines of planetinfo.plist) and there may well be some bugs in there.
+
+Things that seem to work:
+- [x] flying around, charts, F7 screen, planet texturing
+- [x] galactic witchspace
+- [x] OXP setting of planetinfo (including removal when the OXP goes)
+- [x] JS setting of planetinfo (including changing layer)
+- [x] layers
+- [x] nova mission results preserved
+- [x] loading 1.80-era savegames
+
+Still to do:
+- [x] get the system manager to process secondary planet definitions properly
+- [x] move the rest of the odd properties out of planetinfo.plist into a gamesettings.plist
+- [x] update some loading/processing of properties
+- [ ] resave the starting scenarios files into the new save game format (though this is more a task for shortly before release)
+- [x] validate data types before setting a value 
+- [ ] Xcode update to include the `OOSystemDescriptionManager` files (and possibly cleanup of build errors/warnings that gcc ignores)
+- [x] Test the nova mission still works
+
+Known compatibility issues:
+- OXPs which make changes by JS but don't check to remake them will have those changes disappear on loading a 1.80 save game. If they remake the changes they should stick properly, though.
+- OXPs which make changes by legacy script will not be able to save those changes to the save game
+- Save games from this branch **will not load** in 1.80 (or in 1.81) - not just losing data. A few days advance notice on the forums before we merge it is going to be essential to let people get away from the nightly builds and/or take backups.
+"
+21905949,Customisable laser properties,cim--,2014-09-28 20:17:00+00:00,2014-10-03 20:44:51+00:00,"{'enhancement': 1, 'gameplay': 1, 'plists': 1}","This allows laser properties to be customised by OXP, and new laser weapons to be defined. Should work with any equipment starting ""EQ_WEAPON_"", and the weapon_info dictionary sets its properties (all values have defaults to pulse laser)
+
+It also includes some modifications I've been playing with to the beam/military laser spec which I think give much more interesting fights and sort out some of the balance issues.
+
+Also included: weapons can have default colours set, which are overridden by the ship laser colour. At the moment I've spread the weapon colours out a bit to demonstrate+test this, but we could put the defaults back to red easily enough.
+
+Current incompatibilities:
+- weapon_energy doesn't work for setting NPC forward laser damage any more (the moment we made lasers writable by script that property became somewhat silly, and the obvious new method is to define a suitable laser weapon for the ship). Still works for turret damage and for missile damage (though the missile damage use is obsolete)
+- the old ""twin plasma cannon"" isn't there any more. I doubt anyone is going to miss it. At some future point extending the weapon customisation code to allow projectile and plasma weapons should be possible, but that would require teaching the NPCs how to lead their shots - the code is already in the plasma turret methods, of course - and perhaps about ammunition counts, which is well outside the scope of this code.
+
+Closes #21
+"
+21854111,Oxz manager extras,cim--,2014-09-26 15:03:30+00:00,2014-09-28 16:22:41+00:00,{'enhancement': 1},"Hotkeys for advanced features
+- 'f' => filter OXZ list
+- 'i' => view OXZ info
+- 'x' => extract OXZ to be a disabled OXP in your AddOns folder
+
+Now also reminds users to refresh the list when starting the OXZ manager.
+
+The ""description"" field in a manifest can now have multiple paragraphs - the first is shown on the listing, and all are shown (within screen size limits...) on the 'i'nfo screen
+"
+20271684,Non hard-coded commodities,cim--,2014-08-25 20:57:44+00:00,2014-09-13 09:56:06+00:00,"{'enhancement': 1, 'javascript': 1, 'simulation': 1}","This is probably ready for a bit of testing in a branch.
+
+Note: will currently break Mac build because the `OOCommodities.m` and `OOCommodityMarket.m` files aren't in the XCode project.
+## Features:
+- Looks pretty much like 1.80 without OXPs (a few quantities and prices are slightly different because the new algorithm can't deliberately use overflow)
+- prices not restricted to multiples of 0.4 up to 102.0
+- per-station and per-trade good buy/sell limits
+- secondary stations can optionally mark smugglers as offenders
+- import and export legality can be changed by OXP either generally or per-station for each good
+- able to add extra goods by OXP (F8 now scrollable if necessary)
+- best import/export prices no longer only at RI/PA pairs for OXP goods
+- trade-good scripts for more customisable setting of quantity, price, legality, etc. per-good, per-station and/or per-system
+- sorting and filtering on F8 screen
+- legality information on F8 screen
+- hermit markets now reflect their clients
+- extra (mostly OXP) information on goods on F8 F8 screen (GUI_SCREEN_MARKETINFO)
+- F8 F8 screen can buy/sell/change good
+- ""full"" buy/sell will stop at the total contracted volume for a good (repeat to carry on)
+
+Loads 1.80 savegames fine as far as I can tell, though doesn't produce savegames that 1.80 will read properly.
+## OXP compatibility:
+- Old stations will get a default ""no trade"" market rather than attempting to parse `commodities.plist`. Whether this is worth fixing depends on how many station OXPs get updated before 1.82
+- OXPs which change `illegal-goods.plist` will find that no longer works. That's only New Cargoes, so far as I know, and anyway, the documentation did warn against doing that.
+- OXPs expecting a fixed commodity list are probably okay in that the names haven't changed - but the non-canonical names (e.g. `liquorWines` rather than `liquor_wines`) aren't supported
+- JS commodity properties from the old pricing algorithm no longer exist
+- Obviously OXPs making assumptions about the number, price, name, etc. of cargo are going to be more-or-less broken.
+- Cargo contracts should survive the transition, though the JS side of that script needed some updating.
+- Uses new properties and plists, rather than changing meaning of existing ones, so a single OXP which defines the correct properties for both this and 1.80 is possible.
+"
+19626071,Shader update,kanthoney,2014-08-11 20:39:34+00:00,2014-08-17 12:48:20+00:00,{'graphics': 1},"As discussed on the mailing list, we have a problem with our planet shader. The original manifestation of this problem was the razor sharp terminator on the planets when using some graphics cards.   We found a work around for that but it turned out that had it's own problems - it stopped the normal mapping from working correctly on affected cards, causing Lave for example to look flat.  Eventually, the problem was traced to the matrix gl_NormalMatrix used in the shader.  Use of this matrix is deprecated, and some cards simply don't bother calculating it.
+
+The non-legacy method of using shaders is to calculate this (and other) matrices in the application, and pass them to the shader via uniforms, which is what this branch does.  It contains a matrix manager which calculates the OpenGL model-view and projection matrices (and matrices derived from these) and then passes them to OpenGL and the shaders.  This means that direct use of the OpenGL matrix functions such as glPushMatrix and glMultMatrix to manipulate the model-view and projection matrices needs to be avoided, so I've defined the functions:
+
+```
+void OOGLPushModelView();
+OOMatrix OOGLPopModelView();
+OOMatrix OOGLGetModelView();
+void OOGLResetModelView();
+void OOGLLoadModelView(OOMatrix matrix);
+void OOGLMultModelView(OOMatrix matrix);
+void OOGLTranslateModelView(Vector vector);
+void OOGLRotateModelView(GLfloat angle, Vector axis);
+void OOGLScaleModelView(Vector scale);
+void OOGLLookAt(Vector eye, Vector center, Vector up);
+void OOGLResetProjection();
+void OOGLPushProjection();
+OOMatrix OOGLPopProjection();
+OOMatrix OOGLGetProjection();
+void OOGLLoadProjection(OOMatrix matrix);
+void OOGLMultProjection(OOMatrix matrix);
+void OOGLTranslateProjection(Vector vector);
+void OOGLRotateProjection(GLfloat angle, Vector axis);
+void OOGLScaleProjection(Vector scale);
+void OOGLFrustum(double left, double right, double bottom, double top, double near, double far);
+void OOGLOrtho(double left, double right, double bottom, double top, double near, double far);
+void OOGLPerspective(double fovy, double aspect, double zNear, double zFar);
+OOMatrix OOGLGetModelViewProjection();
+```
+
+to be used instead, and replaced the existing matrix functions throughout the code.
+
+If a shader defines any of the following uniforms:
+
+```
+ooliteModelView
+ooliteProjection
+ooliteModelViewProjection
+ooliteNormalMatrix
+ooliteModelViewInverse
+ooliteProjectionInverse
+ooliteModelViewProjectionInverse
+ooliteModelViewTranspose
+ooliteProjectionTracnspose
+ooliteModelViewProjectionTranspose
+ooliteModelViewInverseTraspose
+ooliteProjectionInverseTranspose
+ooliteModelViewProjectionInverseTranspose
+```
+
+then Oolite will populate it.  Of these, ooliteNormalMatrix is of type mat3 and all the rest are mat4.  The planet shader has been updated accordingly.  Shaders that use gl_NormalMatrix and other matrices will work just as well (or as badly) as they did before.
+
+One problem that has arisen with this branch is this glitch:
+
+![oolite-294-nq8](https://cloud.githubusercontent.com/assets/5890866/3882031/71eb69b2-2193-11e4-8c06-8dd17b1b1e45.png)
+
+The problem here is that the planet mesh has a vertex directly on each of the poles (seen in wireframe below, the green line is the y-axis), and the vertex shader works by creating a coordinate system at each vertex one basis vector of which points west (or east, I can't remember).  Since there's no west at the poles, the shader fails for this vertex, messing up the adjoining triangles.
+
+![oolite-044](https://cloud.githubusercontent.com/assets/5890866/3882107/1d207f84-2194-11e4-94de-45c19ec26025.png)
+
+I've hopefully solved this problem in this branch by regenerating the planet mesh in such a way that there is no vertex on the poles (in the picture below you can just see the green axis going straight through the middle of one face):
+
+![oolite-045](https://cloud.githubusercontent.com/assets/5890866/3882161/a2609b84-2194-11e4-94f8-3e2985b44462.png)
+
+This means there's no vertex on the poles which should eradicate the problem, although my card doesn't show the problem in the first place.
+
+The downside to this approach is that it replaces a 48,000 line computer generated file (OOPlanetData.c) with another one.  Hopefully that won't cause issues (it will increase my contribution to the project in terms of the number of lines by a factor of about ten!)  Probably this file shouldn't be managed by git, but I don't know if there's anything we can do about that.  In order to regenerate the file I've had to rewrite parts of the icosmesh tool so that it compiles on GNUsetp, and also use a different set of base vertices.  I did test the rewritten tool using the original base vertices and the OOPlanetData.c file came out exactly the same.
+
+I've had to change the Mac code a little, but can't test that with no Mac.
+"
+19576489,Mouse additions,kanthoney,2014-08-10 19:47:38+00:00,2014-08-10 19:53:09+00:00,{},"Add mouse dragging and scrolling to Galactic Chart.
+"
+19418258,NPC reaction times,kanthoney,2014-08-06 17:23:22+00:00,2014-09-03 06:50:05+00:00,"{'enhancement': 1, 'gameplay': 1}","This is an attempt to make the rection times of NPC's more human, as suggested in [this thread](http://aegidian.org/bb/viewtopic.php?f=2&t=16680).  It works by recording the position of each NPC's primaryTarget a few times every second, then fitting a curve to the last few known positions and having the NPC follow the curve instead of reacting instantly to any change in the target's trajectory.  
+
+The standard reaction time is set in the constant COMBAT_AI_STANDARD_REACTION_TIME which is currently half a second - I'm not sure what the best value is, but it should be about the same time it takes a human to notice a change and react to it.  You can set a per-ship reaction time using the ship.reactionTime Javascript property.
+"
+18930335,don't scissor chart at sides,kanthoney,2014-07-26 09:43:00+00:00,2014-07-26 19:22:07+00:00,{},"Cim suggested not clipping the chart on the sides, only at the top and bottom.  I didn't want to push this to master without getting opinions first.
+"
+18630222,Combine long range and short range charts into one zoomable chart,kanthoney,2014-07-20 14:40:11+00:00,2014-07-20 15:26:36+00:00,{},"Following the success of the scrolling short range chart, I got several suggestions on the forum to add features from the long range chart onto it.  Rather than do that I thought I might as well combine the two into one zoomable chart.
+"
+18479924,Scrolling chart,kanthoney,2014-07-16 16:44:24+00:00,2014-07-16 17:42:57+00:00,{},"Add scrolling to short range chart, as suggested by Thargoid in [this thread](http://aegidian.org/bb/viewtopic.php?f=6&t=16690).  
+"
+18018690,Two pass rendering,cim--,2014-07-06 14:31:05+00:00,2014-08-01 08:18:38+00:00,"{'enhancement': 1, 'graphics': 1}","Split the rendering into a short-range and a long-range pass: long-range to render the scene as normal, short-range to fill in details close to the camera.
+
+Stops Z-fighting when large objects viewed at long distance (a Kiota Habitat or a core rock hermit is good for testing)
+![Z-fighting demo](http://compsoc.dur.ac.uk/~cim/oolite/ss/z-fight.png)
+
+See http://www.sjbaker.org/steve/omniv/love_your_z_buffer.html for more on Z buffering - pushing the near plane out to 100m for the main render gives us ~100x more depth precision, which seems to be enough even for large entities. Still have to use painter's algorithm a bit for planet/star atmospheres, though.
+
+The maximum far plane has been pushed 100x further out, too - stops odd look of sun when viewed at extreme ranges.
+
+Doesn't appear to have a significant overhead (very few objects will be eligible to appear in both passes)
+
+100m as the boundary might seem ridiculously close since there's rarely anything inside that range - but it's enough as a start distance for the main pass, and there's an irritating graphical bug with planet atmospheres if it's pushed any further out.
+
+Please test on other platforms and graphics cards.
+"
+14472136,Possible fix for weakref/JS bug on GCC 4.6 - issue #76,cim--,2014-04-07 21:34:09+00:00,2014-04-17 16:34:27+00:00,{},"This seems safe (forcing it to use the alternative branch compiled and didn't cause any obvious JS bugs) and should close #76 so older distros can still compile the next release. Could someone check it over and merge if it looks sound, please?
+"
+11635082,Joystick deadzone handling for 1.78,kanthoney,2014-01-17 20:07:01+00:00,2014-02-05 11:05:50+00:00,{},"Fix to remove the ""hop"" when transitioning out of the deadzone when using a joystick.
+"
+11613092,Joystick configurator,kanthoney,2014-01-17 08:59:13+00:00,2014-02-01 14:05:57+00:00,{},"This is the joystick configurator discussed in this thread: http://aegidian.org/bb/viewtopic.php?f=6&t=16162.
+
+The main joystick option screen has a new option to edit axis profiles:
+
+![oolite-016](https://f.cloud.github.com/assets/5890866/1938876/31a41196-7f55-11e3-84ad-fdc9f2c65372.png)
+
+which enables the player to configure the joystick response to taste.  There are two types of joystick profile; ""standard"", which is a curve with two tweakable parameters:
+
+![oolite-017](https://f.cloud.github.com/assets/5890866/1938888/6ba1b114-7f55-11e3-8d1f-a31722f84032.png)
+
+and ""spline"", where the player defines the curve by setting control points using the mouse:
+
+![oolite-018](https://f.cloud.github.com/assets/5890866/1938890/84dee1e2-7f55-11e3-9b7b-2768dcfed5cc.png)
+"
+11229983,Planet improvements,cim--,2014-01-04 18:21:04+00:00,2014-01-11 14:42:43+00:00,{},"Here we go...
+- NEW_PLANETS works, including with cube map texture OXPs
+- NEW_ATMOSPHERES works, including with texture OXPs
+
+Assuming it tests out okay on systems which aren't mine we can merge this in and at least get some improvements while shady planets are finished.
+"
+11208925,de-hardcode the number of systems,Zireael07,2014-01-03 15:07:45+00:00,2014-01-06 14:19:31+00:00,{},"First time ever touching Objective C, so tell me if I goofed something. I hope not.
+
+This pushes out the number of systems per galaxy to planetinfo.plist. If it works, I can whip up something similar for the number of galaxies and the dimensions of the galaxy chart.
+"
+11171815,Nonlinear scanner,kanthoney,2014-01-01 21:16:24+00:00,2014-02-18 13:38:53+00:00,{},"Tired of being jumped by pirates because your scanner was zoomed in and you didn't see them?  Want to zoom in on a close adversary in a dogfight without losing track of more distant ships?  Then you need the new nonlinear scanner!
+
+Based on captured Thargon technology, and extensively re-engineered by Faulcon de Lacy skunkworks division so you don't need compound eyes to use it, the nonlinear scanner is the answer to every pilot's scanning problems.
+
+Here's how it works.  In the below screenshot I've just zapped an asteroid, and want to zoom in on the splinters to scoop them up.
+
+![scanner1](https://f.cloud.github.com/assets/5890866/1830164/8485c078-7328-11e3-9328-5d4d8a647702.png)
+
+Normally, I'd lose track of the ship lurking in the corner of my scanner.  Not with the nonlinear scanner:
+
+![scanner2](https://f.cloud.github.com/assets/5890866/1830166/d22c28bc-7328-11e3-81bc-0e69e9014d2c.png)
+
+The ship is pushed towards the edge of the scanner, but is still visible on it.
+
+Enabling the nonlinear scanner is a simple matter of setting nonlinear_scanner = yes in your hud.plist.  I've also added an ultra_zoom option to the plist which, when set to yes, gives zoom levels in powers of two, up to a whopping 16:1 - perfect for picking up that awkward bit of cargo.
+"
+10297324,Remove reference to .relative_gitmodules from README.txt,kanthoney,2013-11-26 12:55:00+00:00,2013-12-05 20:36:37+00:00,{},"Quick fix to remove reference to .relative_submodules from README.txt, which is a bit confusing since we're no longer doing it that way.
+
+By the way, the instructions also say to build by just running ""make"", which doesn't work for me (I'm on Linux).  I have to run ""make -f Makefile"", otherwise the build crashes out with lots of errors, the first of which is:
+
+src/Core/Debug/OOJSConsole.h:33:19: warning: jsapi.h: No such file or directory
+
+Are the instructions wrong, or is something broken somewhere else?
+"
+10211879,Fix for opposing keyboard movements,kanthoney,2013-11-22 15:03:52+00:00,2013-11-25 22:05:49+00:00,{},"Fix for situation when pressing both opposing roll, pitch or yaw keys together, so that movement is cancelled instead of having an undetermined effect.  
+"
+10030995,Zipped oxp support / OpenAL,cim--,2013-11-17 11:12:11+00:00,2013-11-17 11:13:51+00:00,{},"Closes #11 
+"
+9849069,Git instructions in README.txt,kanthoney,2013-11-11 16:09:48+00:00,2013-11-19 18:29:02+00:00,{},"As I had major frustrations getting the submodules to work in my github fork, I've added some instructions to README.txt.  I've also created two versions of the .gitmodules file - one with relative paths, one with absolute - the idea being that you copy the absolute version over .gitmodules, download the modules, then copy back the relative version.  Then everything should work cleanly.
+"
+9819712,Nonlinear joystick,kanthoney,2013-11-09 09:58:12+00:00,2013-12-23 15:35:11+00:00,{},"Code to add nonlinear response to joystick, so that it's less jumpy at the centre while still allowing the full range if pushed to extremes. I've put four options to play with in the code, selected by setting STICK_NONLINEAR_OPTION in OOJoystickManager.h:
+
+Option 0 is equivalent to current setting.
+Option 1 is as is in normal mode but makes precision mode nonlinear
+Option 2 makes normal mode nonlinear while leaving precision mode as is
+Option 3 makes both nonlinear with precision mode more precise around the centre.
+
+I've been told there's some work being done to make the deadzone configurable - I've put the deadzone code in OOJoystickManager and added deadZone and setDeadZone methods to get and set the deadzone.
+
+See thread on BB here: http://aegidian.org/bb/viewtopic.php?f=6&t=15770
+
+Also, how do I prevent changes to .gitmodules from appearing here?
+"
+9819466,Update .gitmodules with absolute URLs,kanthoney,2013-11-09 08:59:05+00:00,2013-11-09 09:09:57+00:00,{},"I'm having a problem with forking the oolite repository, which might be down to my inexperience with git, or might be due to the problem outlined below.
+
+The problem seems to be due to the relative URL's in .gitmodules.  When I clone my fork and do a git submodule update --init, because the URL's are relative it tries to get the submodules from my fork, which don't exist.  I can fix the immediate problem by editing .git/config and changing the URL's to absolute.  However, if I edit .gitmodules to do the same than the changes appear in every pull request, which would be annoying for you guys.  If I don't edit .gitmodules then I've got to manually fix the .git/config if I clone again.  Worse still, anybody who clones/forks my repo has to do the same.
+
+So I think the URL's in .gitmodules need to be absolute, as in the patch below.  If I'm not understanding something, please let me know!
+"
+9815657,Docking mode,kanthoney,2013-11-09 00:21:44+00:00,2014-01-22 08:14:02+00:00,{},"Adds a mode to make docking easier for Jamesons, selectable by the % key or via a joystick button.  It removes the roll dampers so that you can set the roll to match that of the station.  See bulletin board thread at http://aegidian.org/bb/viewtopic.php?f=6&t=15770
+"
+9815531,Nonlinear joystick,kanthoney,2013-11-09 00:15:37+00:00,2013-11-09 09:54:52+00:00,{},"Code to add nonlinear response to joystick, so that it's less jumpy at the centre while still allowing the full range if pushed to extremes. I've put four options to play with in the code, selected by setting STICK_NONLINEAR_OPTION in OOJoystickManager.h:
+
+Option 0 is equivalent to current setting.
+Option 1 is as is in normal mode but makes precision mode nonlinear
+Option 2 makes normal mode nonlinear while leaving precision mode as is
+Option 3 makes both nonlinear with precision mode more precise around the centre.
+
+I've been told there's some work being done to make the deadzone configurable - I've put the deadzone code in OOJoystickManager and added deadZone and setDeadZone methods to get and set the deadzone.
+
+See thread on BB here:  http://aegidian.org/bb/viewtopic.php?f=6&t=15770
+"
+8889706,Hud improvements,cim--,2013-10-07 17:11:53+00:00,2013-10-12 12:29:35+00:00,{},"Not for merging yet: just to keep track of which issues it closes that aren't mentioned in commits.
+
+Closes #30, Closes #31
+"
+7885665,Steady state ecosystem,cim--,2013-08-27 12:21:43+00:00,2013-09-28 08:21:19+00:00,{},"Provides the capability to have a Javascript-based AI, and then implements a priority-based AI library. All major AIs have been moved over to the priority AI system. Several more JS methods and properties added, mainly for Ship. Populator and NPC roles expanded to take advantage of things which are easier to write with new AI library.
+
+Obviously needs thoroughly testing, and is not currently finished (added now so I don't forget which issues it deals with). There's some shipdata changes, so you'll probably need to remove shipset OXPs to test properly, since not every ship with a JS AI is in the autoAIMap
+
+Draft and currently out-of-date AI documentation at http://wiki.alioth.net/index.php/User:Cim/JSAI
+
+Closes #39, Closes #40, Closes #35, Closes #15. Also fixes a couple of other bugs especially with commits 73db0d2, 51651f2 and 9f06814 .
+"
+7221098,Fix scanner display bug introduced in 50895952,ErichRitz,2013-07-28 22:09:00+00:00,2013-07-29 17:21:35+00:00,{},"See aegidian.org/bb/viewtopic.php?f=9&t=14238 for description.
+"
+7214371,Javascript AI,cim--,2013-07-27 14:57:02+00:00,2013-08-27 12:16:44+00:00,{},"Provides the capability to have a Javascript-based AI, and then implements a priority-based AI library. All major AIs have been moved over to the priority AI system. Several more JS methods and properties added, mainly for Ship.
+
+Obviously needs thoroughly testing. There's some shipdata changes, so you'll probably need to remove shipset OXPs to test properly, since not every ship with a JS AI is in the autoAIMap
+
+Draft documentation at http://wiki.alioth.net/index.php/User:Cim/JSAI
+
+Closes #39, Closes #40, Closes #35, Closes #15. Also fixes a couple of other bugs especially with commits 73db0d2, 51651f2 and 9f06814 .
+"
+6914210,Fix NumKeys bindings,nafigator,2013-07-14 15:45:05+00:00,2013-11-03 16:53:13+00:00,{},"This commit fixes hardcoded keybindings. Now:
+- Num keys bindable independently from F1-F8 keys
+- NumPad keys bindable independently from arrow keys
+- NumPad numeric keys decimal codes (NumPad0 - NumPad9): 310 - 319
+- Arrow keys also bindable in keyconfig.plist. It make sense to bind GUI arrows on same keys that binded on combat movements.
+
+Example (keyconfig.plist):
+
+```
+key_roll_left               = 314;      // NumPad4
+key_roll_right              = 316;      // NumPad6
+key_pitch_forward           = 318;      // NumPad8
+key_pitch_back              = 315;      // NumPad5
+key_yaw_left                = 317;      // NumPad7
+key_yaw_right               = 319;      // NumPad9
+
+key_gui_arrow_left          = 314;
+key_gui_arrow_right         = 316;
+key_gui_arrow_up            = 318;
+key_gui_arrow_down          = 315;
+```
+"
+6789189,New sun,cim--,2013-07-08 20:37:13+00:00,2013-07-08 23:51:06+00:00,{},
+6711818,Javascript populator and high-precision coordinate system,cim--,2013-07-03 17:34:47+00:00,2013-07-11 20:10:09+00:00,{},"Initial implementation for issue #36, and hopefully complete implemenation of issue #22 
+
+Needs more testing before merging into master.
+"
