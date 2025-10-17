@@ -1,0 +1,196 @@
+id,title,author,created_at,closed_at,labels,body
+2843527935,Remove hunger,GSKryachko,2025-09-19 11:31:49+00:00,2025-09-19 11:33:00+00:00,{},Renamed for my needs + removed hunger + made all the bags available right away (I hate wasting time on inventory management)
+2760433417,mistake,SZL0056,2025-08-20 16:45:31+00:00,2025-08-20 16:48:43+00:00,{},"地牢基底更新到最新
+update base"
+2756665620,Sofia station total conversion,Zacsluss,2025-08-19 14:22:29+00:00,2025-08-19 14:42:27+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+2619935859,Actions,braxus32,2025-06-26 04:00:16+00:00,2025-06-26 04:02:37+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+2512141323,Champion buffs: Combined lethality and twin upgrades,lordlen,2025-05-11 13:43:14+00:00,2025-05-11 13:43:25+00:00,{},"Combined lethality gets 60% execute threshold when a weapon ability is used to finish
+Twin upgrades: Innate 2 tiers lower. The gap decreases by 1 per level up to 1 tier higher"
+2441407161,spirit bow recharge,lordlen,2025-04-06 01:02:06+00:00,2025-04-06 01:02:15+00:00,{},Spirit bow starts out with 3 charges and gains 1 additional max charge per upgrade.
+2427377153,Len/hotfix giants,lordlen,2025-03-30 04:18:20+00:00,2025-03-30 04:18:27+00:00,{},Remove giants for now
+2418291265,Chains rework,BacalaoPlusPlus,2025-03-26 04:13:47+00:00,2025-03-26 04:14:02+00:00,{},
+2418011411,burning nerf,lordlen,2025-03-26 00:12:32+00:00,2025-03-26 00:14:28+00:00,{},Removed random damage and reduced damage to 1 + (depth_scaling/4)
+2415030929,haste flow nerf,lordlen,2025-03-24 23:29:40+00:00,2025-03-24 23:30:44+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+2415006921,Nerf crabs. Add back to f3,lordlen,2025-03-24 23:07:58+00:00,2025-03-24 23:09:47+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+2411634047,Swap crab and slime spawns,lordlen,2025-03-23 00:28:46+00:00,2025-03-23 00:33:55+00:00,{},Swap the crab and slime spawns
+2411627292,Testing,BacalaoPlusPlus,2025-03-23 00:09:35+00:00,2025-03-23 00:09:58+00:00,{},Input Block
+2409851967,Update getting-started-ios.md,gleatd01,2025-03-21 15:36:07+00:00,2025-03-21 15:39:20+00:00,{},"typo set-by-step to step-by-step
+
+Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+2321838776,Update ScrollOfUpgrade.java,litteraly-me-fr,2025-02-07 09:26:10+00:00,2025-02-07 16:07:45+00:00,{},"public Item upgradeItem(Item item) {
+    int upgradeCount = 100; // Change this value to set how many times to upgrade
+
+Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+2270201071,Update actors.properties,1llFileAnything,2025-01-10 10:39:00+00:00,2025-01-10 10:40:28+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+2270200358,Patch 1,1llFileAnything,2025-01-10 10:38:45+00:00,2025-01-10 10:40:38+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+2196757093,branch test,TejavaV3,2024-11-24 12:32:46+00:00,2024-11-24 12:33:21+00:00,{},
+1783514313,F-Droid Link,FrostKiwi,2024-03-21 04:37:15+00:00,2024-03-21 06:27:47+00:00,{},"This game is a FOSS success story, thought it would be appropriate to show off the F-Droid link as well with a banner.
+Using the other banners as a template, I created a banner for F-Droid as well and inserted it next to the ""Get it on Google Play Store"" banner.
+[![Get it on F-Droid](https://github.com/00-Evan/shattered-pixel-dungeon/assets/60887273/3628dc2c-eed9-412c-b40e-27a863223197)](https://f-droid.org/en/packages/com.shatteredpixel.shatteredpixeldungeon)
+I am fully aware, that the repo takes no Pull requests, but since this isn't code, I though I drop this here.
+
+Thanks for the countless hours of fun."
+1715550101,Resolve merge conflicts,ismvru,2024-02-07 12:08:52+00:00,2024-02-07 12:09:05+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+1390139266,Homage,qwerty920323,2023-06-13 08:45:07+00:00,2023-06-13 14:49:18+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+1305479150,Refactoring Changes,dhaneshwalte,2023-04-07 02:46:07+00:00,2023-04-07 15:06:53+00:00,{},Added Design Level and Implementation Level Refactors
+1300152802,Added Implementation Level Refactors,dhaneshwalte,2023-04-03 14:14:58+00:00,2023-04-03 15:07:18+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+1111608925,Refactor Badges class,tunguski,2022-11-05 11:07:55+00:00,2022-11-05 17:05:36+00:00,{},"**Right now this PR is mostly about asking would you be consider proposed change.** It is not ready to be merged as it should have tests showing no change before/after. It is more about starting discussion if you see it valuable and what would you expect to see added/modified before merging.
+
+## Goal
+
+This PR introduces a couple of changes aiming to:
+
+* reduce duplication
+* reduce bugs surface
+* safeguard consistent behavior between badges handling
+
+## Changes
+
+### Generic `validate()` method
+
+Instead of multiple methods validating specific badges, new methods are introduced:
+
+* `validate(Badge badge)`
+* `validateDeath(Badge badge)`
+
+### Assign and access validation methods to badges enum constants
+
+By default `validate(Badge)` is used to add badge. For death related enum constants this is set to `validateDeath(Badge)`.
+
+### Generic `validateLevels(Map<Badge, Integer> levels, int value)` for leveled badges
+
+Instead of copying same code between multiple validation methods for different badges and between conditional branches, single generic method is introduced. This way consistent approach is guaranteed.
+
+### Introduce `CollectionUtils`
+
+As for now it contains these basic utility functions:
+
+```java
+public static <T> List<T> filter(Iterable<T> collection, Predicate<T> condition)
+public static <T> T getFirst(Iterable<T> collection, Predicate<T> condition)
+public static <T> boolean allMatch(Iterable<T> collection, Predicate<T> condition)
+
+// helpers for creation of immutable maps
+public static <K, V> MapBuilder<K, V> mapBuilder()
+public static <K, V> MapBuilder<K, V> linkedMapBuilder()
+```
+
+`filter`, `getFirst` and `allMatch` allow avoiding duplicated loops as in
+
+```java
+// instead of a loop copied in multiple places, allMatch hides it (internally it is still a loop)
+boolean allUnlocked = allMatch(firstBossClassBadges.values(), Badges::isUnlocked);
+
+// instead of for (Catalog cat : Catalog.values()) { if (allSeen(cat)) { ... }}
+// filter returns a list of elements that match condition
+filter(Catalog.catalogs(), Catalog::allSeen)
+```
+
+### Introduce `maybeDisplayBadge(Badge badge, Predicate<Badge> condition)`
+
+Current code duplicates 6 lines for a conditional badge display. This helper method removes duplication so resulting code looks like this:
+
+```java
+maybeDisplayBadge(Badge.PIRANHAS, b -> Statistics.piranhasKilled >= 6);
+```
+
+## What now
+
+All these changes remove 180 lines of code net.
+
+I'd like to ask what do you think about this approach. If you think this may be a valuable change, I will 
+
+* experiment with writing unit tests evidencing these changes did not break anything
+* document and format changes a bit
+
+But I want to ask you about your opinion do you actually want this change.
+
+---
+
+**Thanks for this fantastic game!**"
+1046718955,Update,bcasiello,2022-09-05 17:19:17+00:00,2022-09-05 18:20:39+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+1043205261,E,Inferno214221,2022-09-01 04:53:50+00:00,2022-09-01 04:54:28+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+1015246512,"100% dew drop, ankh blessed at 10, waterskin max 40, floors always dr…",CalebAlex-Ander,2022-08-02 15:11:53+00:00,2022-08-02 15:12:14+00:00,{},
+926368427,1,LingASDJ,2022-05-03 09:26:12+00:00,2022-05-03 09:26:20+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+776646830,총기 클래스 추가,Hoto-Mocha,2021-11-09 15:16:54+00:00,2021-11-09 15:18:24+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+751287038,learn,catandA,2021-10-06 09:41:22+00:00,2021-10-06 10:02:48+00:00,{},"learn
+
+Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+729311862,1.0.3 merge,saqfish,2021-09-08 06:06:33+00:00,2021-09-08 06:06:52+00:00,{},
+674531795,test,Meel703,2021-06-21 13:01:27+00:00,2021-06-21 13:02:04+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+648585898,20210513,kjhkdh9705,2021-05-20 08:36:23+00:00,2021-05-20 08:37:01+00:00,{},"Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome."
+602313341,Update readme,jjech,2021-03-28 21:30:36+00:00,2021-03-28 21:33:36+00:00,{},
+567190486,Update WndGameInProgress.java,Henrik-Geissler,2021-02-03 22:35:17+00:00,2021-02-03 22:59:05+00:00,{},"Switched Positions of 'Erase' and 'Continue'
+
+Dear Developer, the continue Button should be on the right like every other 'ok'-button in every other app.
+Erasing a game by mistake can be very frustrating.
+
+Please consider accepting this PR :)"
+530905657,Fix high CPU on minimize/idle.,vshih,2020-12-02 10:14:49+00:00,2020-12-02 14:49:15+00:00,{},"I know this repo doesn't accept PRs, just noting that this fixes #540 for me."
+471830084,Merge 0.8.2,Byrnorthil,2020-08-21 19:57:32+00:00,2020-08-21 19:57:47+00:00,{},
+434206714,generalize quick slot logic,trebor,2020-06-14 21:46:07+00:00,2020-06-14 21:52:17+00:00,{},"this PR should have not direct changes to current game behavior but is intended to lay the ground-work for adding more quick slots in the future.   changes:
+
+  - create a single source of truth for slot count
+  - generalize all the logic (that i could find) that involves quick slots
+  - add an explicit max slot count currently 12
+  - extend the strings in windows.properties to support 12 slots
+
+i have tested the UI with values for `QuickSlot.QUICKSLOT_COUNT` as large as 12 on the desktop version, which appears to all work well.
+
+once this PR is merged i intend to start exploring ways to increase the slot count that would work across all platforms."
+425198520,Stamina added,Dungeonmir,2020-05-29 16:20:11+00:00,2020-05-29 16:20:46+00:00,{},
+404774967,Ported 0.8.0 (yay!),Byrnorthil,2020-04-16 21:56:17+00:00,2020-04-16 21:56:40+00:00,{},
+398316626,Replace C-style array declaration with Java-style,midyh,2020-04-03 18:14:10+00:00,2020-04-03 18:48:23+00:00,{},Replaces C-style array declaration of parameter 'right' with Java-style array declaration (`float[] right`)
+361898751,typo: sparcely,goblin,2020-01-13 01:41:55+00:00,2020-01-13 08:39:50+00:00,{},minor typo
+319210934,update russian translate,IgorPolyakov,2019-09-19 10:41:55+00:00,2019-09-19 15:38:44+00:00,{},
+273480396,Fix hit chance computation for the Stone glyph,Grimy,2019-04-25 11:13:45+00:00,2019-04-25 18:34:43+00:00,{},"The formula `1f - (1f - (accuracy/evasion))/2f` was clearly incorrect (in particular, it returns 1 (100% chance to hit) when accuracy == evasion). The cause seems to be a misplaced closing parenthesis. Moving that parenthesis gives `1f - (1f - (accuracy/evasion)/2f)`, which is correct, and can be simplified to `(accuracy/evasion)/2f`.
+
+It seems like you don't accept pull requests, so feel free to close this and commit the change yourself if you'd like."
+238943745,Add missiles to the Journal. Needs to be adjusted to 0.7.1 yet,spixi,2018-12-16 03:00:55+00:00,2018-12-16 14:44:42+00:00,{},"Because of the Huntress redo, missiles are now much more important. This adds a missile menu to the Journal."
+197946020,Fix a typo in actors_de.properties and update translation of,spixi,2018-06-28 07:56:29+00:00,2018-06-28 18:48:56+00:00,{},items_de.properties
+187168739,Some additions to the german translation.,Kaligule,2018-05-10 11:31:16+00:00,2018-05-10 16:30:54+00:00,{},Also remove some trailing whitespace.
+184164663,Added fastlane metadata,sotpapathe,2018-04-25 21:11:02+00:00,2018-04-25 21:13:13+00:00,{},This resolves issue #211. I have added descriptions and images for US English. The short description was taken from the Github README. The images and long description were taken from Play Store. I removed 3 lines from the description that did not seem relevant to the F-Droid version.
+171038152,add google() repo to for findind the gradle plugin,Bubu,2018-02-23 15:10:41+00:00,2018-02-23 17:49:42+00:00,{},"The android gradle plugin 3.0+ is only available via google() repo.
+Thus we need to add the google() repo to the buildscript section as well.
+
+Fixes: https://f-droid.org/wiki/page/com.shatteredpixel.shatteredpixeldungeon/lastbuild_242
+
+   > Could not find com.android.tools.build:gradle:3.0.1.
+     Searched in the following locations:
+         https://jcenter.bintray.com/com/android/tools/build/gradle/3.0.1/gradle-3.0.1.pom
+         https://jcenter.bintray.com/com/android/tools/build/gradle/3.0.1/gradle-3.0.1.jar
+     Required by:
+         project :"
+141460445,A few german translations for journal,cyberbeat,2017-09-16 20:14:32+00:00,2017-09-16 20:20:00+00:00,{},
+139059087,Fix bug related to progression items in heroes remains,chanmanx,2017-09-03 19:39:15+00:00,2017-09-04 06:45:56+00:00,{},"This fixes a bug introduced with commit ef9a2a0d567b594dfa63551db823a512e8877eba.  Line 155 sets the Bones.depth static variable to 0, so the condition evaluated at line 184 will always evaluate to true.  It looks like you should be comparing against Dungeon.depth instead."
+136635559,Remove unnecessary article,erikhuizinga,2017-08-20 08:39:14+00:00,2017-08-20 08:44:15+00:00,{},"The 'the' article in the sentence when you enter a new level of Pixel Dungeon has annoyed me since the very first time I played (Shattered) Pixel Dungeon, which was years ago. 
+
+> Welcome to ~~the~~ level X of Pixel Dungeon!
+
+I figured it would be fixed some day, but since that day has never come I thought: I'll fix it myself. Here you go!
+
+Please discuss this language thing if you feel the article should be there: I'm not a native english speaker, so my change may not reflect the sentence's semantics as they were originally intended."
+89507544,Fixed grammar on 'welcome' text,LunarLoony,2016-10-15 21:42:44+00:00,2016-10-15 22:01:18+00:00,{},"Changed 'Welcome...' text from 'Welcome to _the_ level 2 of Pixel Dungeon' to 'Welcome to level 2 of Pixel Dungeon'.
+"
+48097626,Troll Blacksmith trolls grinders,brunal,2015-10-19 16:55:04+00:00,2015-10-20 22:12:39+00:00,{},"After blacksmith troll question completion, an adventurer of level > 20
+will receive a new quest: mining 50 pieces of dark gold ore. The
+completion of this new quest, however, does not provide anything more
+than the troll saying ""Thank you"".
+
+The best justification is that a troll should troll.
+
+I tried to respect the current code style. There's some code duplication which is not really nice.
+This is just a dumb idea I suddenly had.
+"
+47461152,Removed extend Potion of Str,dachhack,2015-10-12 20:31:00+00:00,2015-10-12 20:44:21+00:00,{},"idk why this was an extend of pot of str. I moved it back to extend pot and it cleared up a bug I was having.
+"
+39807166,added random blessings,mafgh,2015-07-13 12:40:08+00:00,2015-07-14 14:06:19+00:00,{},"On first Level entry, our Hero may be blessed by the gods with an item.
+"
+39227392,Snow effects,ndachel,2015-07-05 21:38:36+00:00,2015-07-05 21:40:14+00:00,{},
+37003585,Improve sprites,ndachel,2015-06-05 06:12:09+00:00,2015-06-05 06:12:35+00:00,{},
+36996340,initial ice build,ndachel,2015-06-05 02:31:09+00:00,2015-06-05 02:31:56+00:00,{},"all namespace changes for ice and new level 1-5 environment sprites - no behavior changes
+"
+29008623,MeleeWeapon: Fix malevolent magic message,ghost,2015-02-10 13:59:23+00:00,2015-02-10 14:21:07+00:00,{'Quirk': 1},"It's missing a 'the', which the other items already have.
+"
+27242616,Add space after first paragraph of unstable spellbook text,prurigro,2015-01-13 01:52:33+00:00,2015-01-13 13:49:41+00:00,{},"A minor tweak to add a space after the first paragraph of the Unstable Spellbook artifact. Prior to adding this, the text looks like: `might cast.The book's`
+"
