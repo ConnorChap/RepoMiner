@@ -14,9 +14,10 @@ merged = pd.merge(prs, sentimentSummary, left_on="Game Title", right_on="Title")
 
 merged["Bug_Ratio"] = merged["Bug Fix"] / merged["Total PRs"]
 merged["Refinement_Ratio"] = merged["Refinements"] / merged["Total PRs"]
+merged["Feature_Ratio"] = merged["Feature Addition"] / merged["Total PRs"]
 merged["Update_Frequency"] = np.log1p(merged["Total Releases"])
 
-x = merged[["Bug_Ratio", "Refinement_Ratio", "Update_Frequency"]]
+x = merged[["Bug_Ratio", "Refinement_Ratio", "Feature_Ratio", "Update_Frequency"]]
 y = merged["Avg_Positive_Sentiment"]
 
 scaler = StandardScaler()
@@ -46,7 +47,7 @@ plt.grid(True)
 plt.tight_layout()
 plt.savefig("tables/scatter_plot.png")
 
-features = ["Bug_Ratio", "Refinement_Ratio", "Update_Frequency"]
+features = ["Bug_Ratio", "Refinement_Ratio", "Feature_Ratio", "Update_Frequency"]
 for f in features:
     plt.figure(figsize=(6,4))
     plt.scatter(merged[f], merged["Avg_Positive_Sentiment"], color="blue", alpha=0.7, s=100, edgecolor="k")
