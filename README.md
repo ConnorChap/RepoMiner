@@ -1,7 +1,7 @@
 # RepoMiner
 Gather pull request information 
 
-## Setup Steps:
+## Setup Steps for Mining:
 1.) clone repo<br>
 2.) create a python environment<br>
 3.) create a new file named .env<br>
